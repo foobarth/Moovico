@@ -30,6 +30,7 @@ class Moovico
     const E_DB_BINDING_FAILED       = 304;
     const E_DB_UNDEFINED_COLUMN     = 305;
     const E_DB_DATA_NOT_AVAILABLE   = 306;
+    const E_DB_INSUFFICIENT_DATA    = 307;
 
     const E_VIEW_NO_TEMPLATE        = 401;
 
@@ -386,18 +387,6 @@ class Moovico
     public static function AddPlugin($name, MoovicoPluginInterface $plugin)
     {
         self::$plugins[$name] = $plugin;
-    }
-
-    /**
-     * GetParams 
-     * 
-     * @static
-     * @access public
-     * @return void
-     */
-    public static function GetParams()
-    {
-        return self::$params;
     }
 
     /**

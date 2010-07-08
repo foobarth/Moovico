@@ -37,6 +37,24 @@ abstract class MoovicoController
     }
 
     /**
+     * RequireArg 
+     * 
+     * @param mixed $arg 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function RequireArg(&$arg, $type = 'string')
+    {
+        if (empty($arg))
+        {   
+            throw new MoovicoException('Required parameter '.$name.' missing.', Moovico::E_CORE_MISSING_PARAM);
+        }
+
+        settype($arg, $type);
+    }
+
+    /**
      * RequireParam 
      * 
      * @param mixed $name 
@@ -142,5 +160,23 @@ abstract class MoovicoController
         {
             throw new MoovicoException('Not authorized', Moovico::E_SESSION_NOT_AUTHORIZED);
         }
+    }
+
+    /**
+     * ClearSessionToken 
+     * 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function ClearSessionToken()
+    {
+        $id = session_id();
+        if (empty($id))
+        {
+          throw new MoovicoException('No session available', Moovico::E_SESSION_NO_SESSION);
+        }
+
+        unset($_SESSION[self::AUTH_TOKEN_KEY]);
     }
 }
