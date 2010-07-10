@@ -56,11 +56,21 @@ class Moovico
     protected static $time_needed;
 
     /**
+     *  
+     */
+    protected static $time_checkpoint;
+
+    /**
      * TODO: description.
      * 
      * @var double
      */
     protected static $debug;
+
+    /**
+     *  
+     */
+    protected static $debug_stack;
 
     /**
      * TODO: description
@@ -123,6 +133,8 @@ class Moovico
      */
     public static function Setup()
     {
+        self::$time_start = microtime(true);
+        self::$time_checkpoint = self::$time_start;
         self::$app_root = isset($_SERVER['MOOVICO_APP_ROOT']) ? $_SERVER['MOOVICO_APP_ROOT'] : '../';
         spl_autoload_register(array(__CLASS__, '__autoload'));
         set_exception_handler(array(__CLASS__, '__exceptionHandler'));
@@ -203,6 +215,7 @@ class Moovico
         self::$debug = $debug === true;
         if (self::$debug === true)
         {
+            self::$debug_stack = array();
             ini_set('display_startup_errors', 1);
             ini_set('display_errors', 1);
             error_reporting(E_ALL | E_STRICT);
@@ -222,13 +235,16 @@ class Moovico
         if (self::$debug === true)
         {
             $bt = debug_backtrace();
-            echo "<pre><b>"
-               . $bt[1]['class']
-               . '::'
-               . $bt[1]['function']
-               . '('.@implode(', ', $bt[1]['args']).")</b>\n  " 
-               . str_replace("\n", "\n  ", print_r($what, true))
-               . '</pre>';
+            $time_needed = self::GetTime(true);
+            $str = $bt[1]['class']
+                 . '::'
+                 . $bt[1]['function']
+                 . '('.@implode(', ', $bt[1]['args']).")" 
+                 . " [".sprintf("%.2f", $time_needed * 1000).' msec]'
+                 . "\n  ".str_replace("\n", "\n  ", print_r($what, true))
+                 ;
+
+            self::$debug_stack[] = $str;
         }
     }
 
@@ -239,7 +255,6 @@ class Moovico
      */
     protected static function start()
     {
-        self::$time_start = microtime(true);
     }
 
     /**
@@ -260,9 +275,19 @@ class Moovico
      * @access public
      * @return void
      */
-    public static function GetTime()
+    public static function GetTime($sinceCheckpoint = false)
     {
-        $time_needed = microtime(true) - self::$time_start;
+        $now = microtime(true);
+        if ($sinceCheckpoint)
+        {
+            $time_needed = $now - self::$time_checkpoint;
+            self::$time_checkpoint = $now;
+        }
+        else
+        {
+            $time_needed = $now - self::$time_start;
+        }
+
         return $time_needed;
     }
 
@@ -545,6 +570,11 @@ class Moovico
             }
 
             $response = self::$response;
+        }
+
+        if (self::$debug === true)
+        {
+            $response->debug = self::$debug_stack;
         }
 
 //        header('Content-Type: '.$response->GetContentType());
