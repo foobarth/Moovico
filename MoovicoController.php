@@ -119,7 +119,7 @@ abstract class MoovicoController
             $this->params[$name] = $default;
         }
 
-        if (!empty($this->params[$name]) || $this->params[$name] === 0)
+        if (!empty($this->params[$name]) || (isset($this->params[$name]) && $this->params[$name] === 0))
         {
             return $this->RequireParam($name, $type, $whitelist); 
         }
