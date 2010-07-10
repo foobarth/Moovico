@@ -190,16 +190,27 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
 
         if ($use_where && !empty($this->bindings))
         {
-            $glue = ' AND ';
-            $operator = ' = ';
             $tmp = array();
             foreach ($this->bindings as $col => $val)
             {
-                $str = is_null($val) ? $col.' IS NULL' : $col.$operator.'?';
-                $tmp[] = $str;
+                $operator = '=';
+                if (($pos = strpos($col, ' ')) !== false) 
+                {
+                    $newcol = substr($col, 0, $pos);
+                    $operator = substr($col, $pos+1);
+                    $this->bindings[$newcol] = $val;
+                    unset($this->bindings[$col]);
+                    $col = $newcol;
+                }
+
+                foreach ((array)$val as $val2)
+                {
+                    $str = is_null($val2) ? $col.' IS NULL' : $col.' '.$operator.' ?';
+                    $tmp[] = $str;
+                }
             }
 
-            $sql.= ' WHERE '.implode($glue, $tmp);
+            $sql.= ' WHERE '.implode(' '.$this->glue.' ', $tmp);
         }
 
         if ($use_order && !empty($this->order_by))
@@ -236,7 +247,18 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
         $args = array('');
         foreach ($vars as &$v)
         {
-            if (!is_null($v))
+            if (is_array($v))
+            {
+                foreach ($v as &$v2)
+                {
+                    if (!is_null($v2))
+                    {
+                        $args[0].= is_int($v2) ? 'i' : 's';
+                        $args[] = &$v2;
+                    }
+                }
+            } 
+            else 
             {
                 $args[0].= is_int($v) ? 'i' : 's';
                 $args[] = &$v;

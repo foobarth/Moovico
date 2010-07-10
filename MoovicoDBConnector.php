@@ -96,6 +96,14 @@ abstract class MoovicoDBConnector
     protected $maxrows;
 
     /**
+     * glue 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $glue;
+
+    /**
      * __construct 
      * 
      * @access protected
@@ -125,6 +133,7 @@ abstract class MoovicoDBConnector
         $this->order_by = array();
         $this->start = 0;
         $this->maxrows = 0;
+        $this->glue = 'AND';
     }
 
     /**
@@ -362,6 +371,21 @@ abstract class MoovicoDBConnector
     public final function Where(Array $bindings)
     {
         $this->bindings = $bindings;
+
+        return $this;
+    }
+
+    /**
+     * Glue 
+     * 
+     * @param mixed $glue 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function Glue($glue)
+    {
+        $this->glue = $glue;
 
         return $this;
     }

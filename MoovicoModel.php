@@ -38,6 +38,14 @@ abstract class MoovicoModel
     private $maxrows;
 
     /**
+     * glue 
+     * 
+     * @var string
+     * @access private
+     */
+    private $glue = 'AND';
+
+    /**
      * __construct 
      * 
      * @param mixed $pk_value 
@@ -149,6 +157,21 @@ abstract class MoovicoModel
     }
 
     /**
+     * Glue 
+     * 
+     * @param mixed $glue 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function Glue($glue)
+    {
+        $this->glue = $glue;
+
+        return $this;
+    }
+
+    /**
      * Load 
      * 
      * @param mixed $pk_value 
@@ -227,6 +250,7 @@ abstract class MoovicoModel
         $db = Moovico::GetDB();
         $result = $db->Select($columns)
                      ->From($table)
+                     ->Glue($this->glue)
                      ->Where($where)
                      ->OrderBy($this->order_by)
                      ->Limit($this->start, $this->maxrows)
@@ -242,6 +266,7 @@ abstract class MoovicoModel
         $this->order_by = array();
         $this->start = null;
         $this->maxrows = null;
+        $this->glue = 'AND';
 
         return $result;
     }
@@ -287,6 +312,7 @@ abstract class MoovicoModel
         $db = Moovico::GetDB();
         $result = $db->Update($what)
                      ->Table($table)
+                     ->Glue($this->glue)
                      ->Where($where)
                      ->Execute()
                      ;
@@ -314,6 +340,7 @@ abstract class MoovicoModel
         $db = Moovico::GetDB();
         $result = $db->Delete()
                      ->Table($table)
+                     ->Glue($this->glue)
                      ->Where($where)
                      ->Execute()
                      ;
