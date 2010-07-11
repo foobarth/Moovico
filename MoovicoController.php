@@ -41,12 +41,27 @@ abstract class MoovicoController
         $put = array();
         if ($_SERVER['REQUEST_METHOD'] == 'PUT') 
         {
-            $stdin = file_get_contents('php://input');
-            $json = json_decode($stdin);
-            $put = is_null($json) == false ? (array)$json : array('PUT' => $stdin);
+            $this->ProcessRawInput();
         }
 
         $this->params = array_merge($put, $_GET, $_POST);
+    }
+
+    /**
+     * ProcessRawInput 
+     * 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function ProcessRawInput()
+    {
+        $stdin = file_get_contents('php://input');
+        $json = json_decode($stdin);
+        $put = is_null($json) == false ? (array)$json : array('PUT' => $stdin);
+        $this->params = array_merge($put, $_GET, $_POST);
+
+        return $this;
     }
 
     /**
