@@ -70,6 +70,11 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
             throw new MoovicoException('Statement preparation failed: '.$this->db->error, Moovico::E_DB_INVALID_SQL);
         }
 
+        if (empty($this->type))
+        {
+            $this->type = self::DetectType($sql);
+        }
+
         if ($stmt->param_count)
         {
             $vars = func_get_args();
@@ -80,17 +85,13 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 $vars = $vars[0];
             }
 
+            $this->cleanVars($vars);
             $this->bindVars($stmt, $vars);
         }
 
         if (!$stmt->execute())
         {
             throw new MoovicoException('Statement execution failed: '.$stmt->error, Moovico::E_DB_EXECUTE_FAILED);
-        }
-
-        if (empty($this->type))
-        {
-            $this->type = self::DetectType($sql);
         }
 
         switch ($this->type)
@@ -247,6 +248,7 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
         $args = array('');
         foreach ($vars as &$v)
         {
+            /* maybe totally obsolete:
             if (is_array($v))
             {
                 foreach ($v as &$v2)
@@ -260,14 +262,45 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
             } 
             else 
             {
+            */
                 $args[0].= is_int($v) ? 'i' : 's';
                 $args[] = &$v;
-            }
+            /* 
+            } 
+            */
         }
 
         if (!call_user_func_array(array($stmt, 'bind_param'), $args))
         {
             throw new MoovicoException('Parameter binding failed: '.$stmt->error, Moovico::E_DB_BINDING_FAILED);
+        }
+    }
+
+    /**
+     * cleanVars 
+     * 
+     * @param mixed $vars 
+     * @access protected
+     * @return void
+     */
+    protected function cleanVars(&$vars)
+    {
+        switch ($this->type)
+        {
+            case self::SQL_TYPE_INSERT:
+            case self::SQL_TYPE_UPDATE:
+                break;
+
+            default:
+                return;
+        }
+
+        foreach ($vars as &$v)
+        {
+            if ($v === '') // we don't want empty strings, make'em NULL
+            {
+                $v = null;
+            }
         }
     }
 
