@@ -38,7 +38,15 @@ abstract class MoovicoController
      */
     public final function __construct()
     {
-        $this->params = array_merge($_GET, $_POST);
+        $put = array();
+        if ($_SERVER['REQUEST_METHOD'] == 'PUT') 
+        {
+            $stdin = file_get_contents('php://input');
+            $json = json_decode($stdin);
+            $put = is_null($json) == false ? (array)$json : array('PUT' => $stdin);
+        }
+
+        $this->params = array_merge($put, $_GET, $_POST);
     }
 
     /**
@@ -49,14 +57,52 @@ abstract class MoovicoController
      * @access public
      * @return void
      */
-    public final function RequireArg(&$arg, $type = 'string')
+    public final function RequireArg(&$arg, $type = 'string', Array $whitelist = array())
     {
-        if (empty($arg))
+        if (empty($arg) && $arg !== 0)
         {   
-            throw new MoovicoException('Required parameter '.$name.' missing.', Moovico::E_CORE_MISSING_PARAM);
+            throw new MoovicoException('Required argument is empty.', Moovico::E_CORE_MISSING_PARAM);
+        }
+        else
+        {
+            if (($pos = strpos($type, 'array:')) === 0)
+            {
+                $subtype = substr($type, 6);
+
+                if (is_object($arg))
+                {
+                    $arg = (array)$arg;
+                } 
+                else if (!is_array($arg))
+                {
+                    $arg = explode(self::PARAM_SPLIT_TOKEN, $arg);
+                }
+
+                foreach ($arg as &$v)
+                {
+                    if ($subtype == 'json') {
+                        $v = json_decode($v);
+                    } else {
+                        settype($v, $subtype);
+                    }
+                }
+            } 
+            else
+            {
+                if ($type == 'json') {
+                    $arg = json_decode($arg);
+                } else {
+                    settype($arg, $type);
+                }
+            }
         }
 
-        settype($arg, $type);
+        if (func_num_args() == 3 && count($whitelist) && !in_array($arg, $whitelist, true))
+        {   
+            throw new MoovicoException('Invalid value or type in argument', Moovico::E_CORE_INVALID_PARAM);
+        }   
+
+        return $this;
     }
 
     /**
@@ -64,7 +110,6 @@ abstract class MoovicoController
      * 
      * @param mixed $name 
      * @param string $type 
-     * @param mixed $default 
      * @param Array $whitelist 
      * @final
      * @access public
@@ -76,27 +121,32 @@ abstract class MoovicoController
         {   
             throw new MoovicoException('Required parameter '.$name.' missing.', Moovico::E_CORE_MISSING_PARAM);
         }
-        else
-        {
-            if (($pos = strpos($type, 'array:')) === 0)
-            {
-                $subtype = substr($type, 6);
-                $this->params[$name] = explode(self::PARAM_SPLIT_TOKEN, $this->params[$name]);
-                foreach ($this->params[$name] as &$v)
-                {
-                    settype($v, $subtype);
-                }
-            } 
-            else
-            {
-                settype($this->params[$name], $type);
-            }
+
+        return $this->RequireArg($this->params[$name], $type, $whitelist);
+    }
+
+    /**
+     * OptionalArg 
+     * 
+     * @param mixed $arg 
+     * @param string $type 
+     * @param mixed $default 
+     * @param Array $whitelist 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function OptionalArg(&$arg, $type = 'string', $default = null, Array $whitelist = array())
+    {
+        if (func_num_args() >= 3 && empty($arg))
+        {   
+            $arg = $default;
         }
 
-        if (func_num_args() == 3 && count($whitelist) && !in_array($this->params[$name], $whitelist, true))
-        {   
-            throw new MoovicoException('Invalid value or type at parameter '.$name, Moovico::E_CORE_INVALID_PARAM);
-        }   
+        if (!empty($arg) || $arg === 0)
+        {
+            return $this->RequireArg($arg, $type, $whitelist); 
+        }
 
         return $this;
     }
