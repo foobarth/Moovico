@@ -248,7 +248,6 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
         $args = array('');
         foreach ($vars as &$v)
         {
-            /* maybe totally obsolete:
             if (is_array($v))
             {
                 foreach ($v as &$v2)
@@ -262,12 +261,9 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
             } 
             else 
             {
-            */
                 $args[0].= is_int($v) ? 'i' : 's';
                 $args[] = &$v;
-            /* 
             } 
-            */
         }
 
         if (!call_user_func_array(array($stmt, 'bind_param'), $args))
