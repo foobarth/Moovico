@@ -95,20 +95,12 @@ abstract class MoovicoController
 
                 foreach ($arg as &$v)
                 {
-                    if ($subtype == 'json') {
-                        $v = json_decode($v);
-                    } else {
-                        settype($v, $subtype);
-                    }
+                    $this->handleType($v, $subtype);
                 }
             } 
             else
             {
-                if ($type == 'json') {
-                    $arg = json_decode($arg);
-                } else {
-                    settype($arg, $type);
-                }
+                $this->handleType($arg, $type);
             }
         }
 
@@ -118,6 +110,31 @@ abstract class MoovicoController
         }   
 
         return $this;
+    }
+
+    /**
+     * handleType 
+     * 
+     * @param mixed $arg 
+     * @param mixed $type 
+     * @access protected
+     * @return void
+     */
+    protected function handleType(&$arg, $type) 
+    {
+        switch ($type)
+        {
+            case 'json':
+                $arg = json_decode($arg);
+                break;
+
+            case 'date':
+                $arg = $this->MangleDate($arg);
+                break;
+
+            default:
+                settype($arg, $type);
+        }
     }
 
     /**
@@ -190,6 +207,37 @@ abstract class MoovicoController
         }
 
         return $this;
+    }
+
+    /**
+     * MangleDate 
+     * 
+     * @param mixed $date 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function MangleDate($date = null)
+    {
+        $outformat = 'Y-m-d H:i:s';
+        if (empty($date))
+        {
+            return date($outformat);
+        }
+
+        $test_formats = array( // extend as needed
+            $outformat, 'Y-m-d\TH:i:s', 'Y-m-d', 'd.m.Y'
+        );
+        foreach ($test_formats as $format)
+        {
+            $do = DateTime::createFromFormat($format, $date);
+            if ($do) 
+            {
+                return $do->format($outformat);
+            }
+        }
+
+        throw new MoovicoException('Invalid date - cannot parse: '.$date, Moovico::E_CORE_INVALID_PARAM);
     }
 
     /**
