@@ -38,13 +38,13 @@ abstract class MoovicoController
      */
     public final function __construct()
     {
-        $put = array();
         if ($_SERVER['REQUEST_METHOD'] == 'PUT') 
         {
             $this->ProcessRawInput();
+            return;
         }
 
-        $this->params = array_merge($put, $_GET, $_POST);
+        $this->params = array_merge($_GET, $_POST);
     }
 
     /**
