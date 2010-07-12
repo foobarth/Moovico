@@ -85,6 +85,8 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 $vars = $vars[0];
             }
 
+            $vars = $this->getBindingValues($vars);
+
             $this->cleanVars($vars);
             $this->bindVars($stmt, $vars);
         }
@@ -160,7 +162,7 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 break;
 
             case self::SQL_TYPE_INSERT:
-                $columns = array_keys($this->data);
+                $columns = $this->getBindingColumns($this->data);
                 $sql = 'INSERT INTO '.$this->table.' ('.implode(', ', $columns).') VALUES (';
                 $tmp = array();
                 for ($i = 0; $i < count($columns); $i++)
@@ -173,7 +175,7 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
 
             case self::SQL_TYPE_UPDATE:
                 $use_where = true;
-                $columns = array_keys($this->data);
+                $columns = $this->getBindingColumns($this->data);
                 $sql = 'UPDATE '.$this->table.' SET ';
                 $tmp = array();
                 foreach ($columns as $col)
@@ -192,15 +194,16 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
         if ($use_where && !empty($this->bindings))
         {
             $tmp = array();
-            foreach ($this->bindings as $col => $val)
+            foreach ($this->bindings as $idx => $binding)
             {
+                list($col, $val) = $binding;
+
                 $operator = '=';
                 if (($pos = strpos($col, ' ')) !== false) 
                 {
                     $newcol = substr($col, 0, $pos);
                     $operator = substr($col, $pos+1);
-                    $this->bindings[$newcol] = $val;
-                    unset($this->bindings[$col]);
+                    $this->bindings[$idx] = array($newcol, $val);
                     $col = $newcol;
                 }
 

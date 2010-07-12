@@ -8,6 +8,9 @@
  */
 class MoovicoRoute
 {
+    const DEFAULT_CONTROLLER = 'index';
+    const DEFAULT_ACTION = 'index';
+    
     /**
      * name 
      * 
@@ -86,8 +89,8 @@ class MoovicoRoute
             return false;
         }
 
-        $this->controller = 'index';
-        $this->action = 'index';
+        $this->controller = self::DEFAULT_CONTROLLER;
+        $this->action = self::DEFAULT_ACTION;
 
         unset($m[0]);
         $i = 0;

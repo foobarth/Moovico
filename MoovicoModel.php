@@ -358,23 +358,62 @@ abstract class MoovicoModel
      * @access protected
      * @return void
      */
-    protected final function getColumns()
+    protected final function getColumns($type = 0)
     {
-        $class = get_class($this);
-        if (empty(self::$columns[$class]))
+        $type = empty($type) ? ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED : $type;
+        $key = get_class($this).$type;
+        if (empty(self::$columns[$key]))
         {
             $reflect = new ReflectionClass($this);
-            $props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
-            self::$columns[$class] = array();
+            $props = $reflect->getProperties($type);
+            self::$columns[$key] = array();
             foreach ($props as $prop)
             {
                 if (!$prop->isStatic())
                 {
-                    self::$columns[$class][] = $prop->getName();
+                    self::$columns[$key][] = $prop->getName();
                 }
             }
         }
 
-        return self::$columns[$class];
+        return self::$columns[$key];
+    }
+
+    /**
+     * toCSV 
+     * 
+     * @param mixed $include_headers 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function toCSV($include_headers = false)
+    {
+        $e = '"';
+        $s = ';';
+        $t = "\n";
+        $str = '';
+
+        $cols = $this->getColumns(ReflectionProperty::IS_PUBLIC);
+        if ($include_headers == true)
+        {
+            $vals = array();
+            foreach ($cols as $prop)
+            {
+                $vals[] = strtoupper(addcslashes($prop, $e));
+            }
+
+            $str.= $e.implode($e.$s.$e, $vals).$e.$t;
+        }
+
+        $vals = array();
+        foreach ($cols as $prop)
+        {
+            $vals[] = addcslashes($this->{$prop}, $e);
+        }
+
+        $str.= $e.implode($e.$s.$e, $vals).$e.$t;
+
+        return $str;
     }
 }

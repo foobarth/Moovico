@@ -247,9 +247,25 @@ abstract class MoovicoController
      * @access public
      * @return void
      */
-    public final function GetParams()
+    public final function GetParams($selection = null)
     {
-        return $this->params;
+        if (empty($selection)) 
+        {
+            return $this->params;
+        }
+
+        if (!is_array($selection))
+        {
+            $selection = func_get_args();
+        }
+
+        $params = array();
+        foreach ($selection as $k)
+        {
+            $params[$k] = $this->params[$k];
+        }
+
+        return $params;
     }
 
     /**

@@ -286,7 +286,7 @@ abstract class MoovicoDBConnector
     public final function Insert(Array $data)
     {
         $this->type = self::SQL_TYPE_INSERT;
-        $this->data = $data;
+        $this->data = $this->expandParams($data);
 
         return $this;
     }
@@ -302,7 +302,7 @@ abstract class MoovicoDBConnector
     public final function Update(Array $data)
     {
         $this->type = self::SQL_TYPE_UPDATE;
-        $this->data = $data;
+        $this->data = $this->expandParams($data);
 
         return $this;
     }
@@ -370,7 +370,7 @@ abstract class MoovicoDBConnector
      */
     public final function Where(Array $bindings)
     {
-        $this->bindings = $bindings;
+        $this->bindings = $this->expandParams($bindings);
 
         return $this;
     }
@@ -434,5 +434,49 @@ abstract class MoovicoDBConnector
         $this->maxrows = (int)$maxrows;
 
         return $this;
+    }
+
+    /**
+     * expandParams
+     * 
+     * @param mixed $p 
+     * @access protected
+     * @return void
+     */
+    protected function expandParams(Array $p)
+    {
+        $expanded = array();
+        foreach ($p as $k => $v)
+            $expanded[] = array($k, $v);
+
+        return $expanded;
+    }
+
+    /**
+     * getBindingColumns 
+     * 
+     * @param Array $data 
+     * @access protected
+     * @return void
+     */
+    protected function getBindingColumns(Array $data, $idx = 0)
+    {
+        $tmp = array();
+        foreach ($data as $v)
+            $tmp[] = $v[$idx];
+
+        return $tmp;
+    }
+
+    /**
+     * getBindingValues 
+     * 
+     * @param Array $data 
+     * @access protected
+     * @return void
+     */
+    protected function getBindingValues(Array $data)
+    {
+        return $this->getBindingColumns($data, 1);
     }
 }

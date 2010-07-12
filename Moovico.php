@@ -522,21 +522,13 @@ class Moovico
         self::Debug("Loaded class $class");
 
         $controller = new $class();
+        $action = self::getControllerMethod(self::$route->GetAction());
+
         if ($controller instanceof MoovicoRESTInterface)
         {
-            self::Debug("Using REST interface");
-            $action = $_SERVER['REQUEST_METHOD'];
-        }
-        else if ($controller instanceof MoovicoActionInterface)
-        {
-            self::Debug("Using action based interface");
-            $action = self::getControllerMethod(self::$route->GetAction());
-        }
-        else
-        {
-            // the controller itself must handle the request including output
-            self::Debug("Using controller responsible interface");
-            return;
+            $method = $_SERVER['REQUEST_METHOD'];
+            $action = self::$route->GetAction() == MoovicoRoute::DEFAULT_ACTION ? $method : $action.'_'.$method;
+            self::Debug("Using REST interface: $action");
         }
 
         if (!is_callable(array($controller, $action)))
