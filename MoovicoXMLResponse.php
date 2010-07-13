@@ -9,14 +9,16 @@
 class MoovicoXMLResponse extends MoovicoResponseInterface
 {
     /**
-     * GetContentType 
+     * GetHeaders 
      * 
      * @access public
      * @return void
      */
-    public function GetContentType()
+    public function GetHeaders()
     {
-        return 'text/xml; charset=utf-8';
+        return array(
+            'Content-Type: text/xml; charset=utf-8',
+        );
     }
 
     /**

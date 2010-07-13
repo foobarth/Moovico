@@ -9,14 +9,16 @@
 class MoovicoJSONResponse extends MoovicoResponseInterface
 {
     /**
-     * GetContentType 
+     * GetHeaders 
      * 
      * @access public
      * @return void
      */
-    public function GetContentType()
+    public function GetHeaders()
     {
-        return 'application/json; charset=utf-8';
+        return array(
+            'Content-Type: application/json; charset=utf-8',
+        );
     }
 
     /**

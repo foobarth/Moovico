@@ -1,7 +1,28 @@
 <?php
 
+/**
+ * MoovicoResponseInterface 
+ * 
+ * @abstract
+ * @package 
+ * @version 
+ * @copyright (c) Kodweiss E-Business GmbH
+ * @author Kodweiss E-Business GmbH 
+ * @license 
+ */
 abstract class MoovicoResponseInterface
 {
+    /**
+     * __construct 
+     * 
+     * @access public
+     * @return void
+     */
+    public function __construct()
+    {
+        // empty for now...
+    }
+
     /**
      * Apply 
      * 
@@ -35,6 +56,21 @@ abstract class MoovicoResponseInterface
         return $obj;
     }
 
-    abstract public function GetContentType();
+    /**
+     * GetHeaders 
+     * 
+     * @abstract
+     * @access public
+     * @return void
+     */
+    abstract public function GetHeaders();
+
+    /**
+     * __toString 
+     * 
+     * @abstract
+     * @access public
+     * @return void
+     */
     abstract public function __toString();
 }

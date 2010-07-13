@@ -9,14 +9,16 @@
 class MoovicoPlainTextResponse extends MoovicoResponseInterface
 {
     /**
-     * GetContentType 
+     * GetHeaders 
      * 
      * @access public
      * @return void
      */
-    public function GetContentType()
+    public function GetHeaders()
     {
-        return 'text/plain; charset=utf-8';
+        return array(
+            'Content-Type: text/plain; charset=utf-8',
+        );
     }
 
     /**

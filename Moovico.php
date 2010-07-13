@@ -569,7 +569,11 @@ class Moovico
             $response->debug = self::$debug_stack;
         }
 
-//        header('Content-Type: '.$response->GetContentType());
+        foreach ($response->GetHeaders() as $header)
+        {
+            header($header);
+        }
+
         echo $response;
     }
 
@@ -608,6 +612,10 @@ class Moovico
 
             case 'html':
                 $response = MoovicoHTMLResponse::Apply($payload);
+                break;
+
+            case 'csv':
+                $response = MoovicoCSVResponse::Apply($payload);
                 break;
 
             default:
