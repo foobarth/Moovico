@@ -97,17 +97,20 @@ class MoovicoRoute
         $special = array('controller', 'action', 'format');
         foreach ($m as $k => $v)
         {
+            if (is_numeric($k)) continue;
+
             if (in_array($k, $special))
             {
-                $this->{$k} = $m[$k];
+                $this->{$k} = $v;
                 unset($m[$k]);
-                if (isset($m[$i+1]) && $m[$i+1] == $this->{$k})
-                {
-                    unset($m[$i+1]);
-                }
-
-                $i++;
             }
+
+            if (isset($m[$i+1]) && $m[$i+1] == $v)
+            {
+                unset($m[$i+1]);
+            }
+
+            $i++;
         }
 
         $this->params = !empty($m) ? $m : array();

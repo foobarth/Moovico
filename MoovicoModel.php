@@ -183,7 +183,7 @@ abstract class MoovicoModel
      */
     public final function Load($pk_value)
     {
-        $where = array(static::PK => $pk_value);
+        $where = is_array($pk_value) ? $pk_value : array(static::PK => $pk_value);
         $result = $this->Read($where);
         $this->Init($result[0]);
     }

@@ -17,6 +17,14 @@ class MoovicoView
     protected $template_file;
 
     /**
+     * payload 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $payload;
+
+    /**
      * __construct 
      * 
      * @param mixed $template_file 
@@ -38,10 +46,10 @@ class MoovicoView
      * @access public
      * @return void
      */
-    public function Render()
+    public function Render($payload)
     {
         ob_start();
-        $this->Show();
+        $this->Show($payload);
         $content = ob_get_contents();
         ob_end_clean();
 
@@ -54,7 +62,36 @@ class MoovicoView
      * @access public
      * @return void
      */
-    public function Show()
+    public function Show($payload)
+    {
+        $this->payload = $payload;
+        $this->doShow();
+    }
+
+    /**
+     * __get 
+     * 
+     * @param mixed $what 
+     * @access protected
+     * @return void
+     */
+    protected function __get($what)
+    {
+        if (!empty($this->payload->{$what}))
+        {
+            return $this->payload->{$what};
+        }
+
+        return null;
+    }
+
+    /**
+     * doShow 
+     * 
+     * @access protected
+     * @return void
+     */
+    protected function doShow()
     {
         include($this->template_file);
     }

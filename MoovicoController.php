@@ -32,11 +32,10 @@ abstract class MoovicoController
     /**
      * __construct 
      * 
-     * @final
      * @access public
      * @return void
      */
-    public final function __construct()
+    public function __construct()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'PUT') 
         {
