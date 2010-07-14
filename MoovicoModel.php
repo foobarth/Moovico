@@ -71,7 +71,7 @@ abstract class MoovicoModel
      */
     public final function __set($what, $value)
     {
-        if (!in_array($what, $this->getColumns()))
+        if (!in_array($what, $this->doGetColumns()))
         {
             throw new MoovicoException('Cannot set undefined member '.get_class($this).'::'.$what, Moovico::E_DB_UNDEFINED_COLUMN);
         }
@@ -107,7 +107,7 @@ abstract class MoovicoModel
             $data = (array)$data;
         }
 
-        foreach ($this->getColumns() as $prop)
+        foreach ($this->doGetColumns() as $prop)
         {
             if (isset($data[$prop]))
             {
@@ -214,7 +214,7 @@ abstract class MoovicoModel
         $use_this = empty($what);
         if ($use_this)
         {
-            foreach ($this->getColumns() as $prop)
+            foreach ($this->doGetColumns() as $prop)
             {
                 if (!is_null($this->{$prop}))
                 {
@@ -247,7 +247,7 @@ abstract class MoovicoModel
      */
     public final function Read(Array $where = array())
     {
-        $columns = $this->getColumns();
+        $columns = $this->doGetColumns();
         $table = static::TABLE;
 
         $db = Moovico::GetDB();
@@ -303,7 +303,7 @@ abstract class MoovicoModel
         $use_this = empty($what);
         if ($use_this)
         {
-            foreach ($this->getColumns() as $prop)
+            foreach ($this->doGetColumns() as $prop)
             {
                 if (!is_null($this->{$prop}) && $prop != static::PK)
                 {
@@ -352,13 +352,25 @@ abstract class MoovicoModel
     }
 
     /**
-     * getColumns 
+     * GetColumns 
+     * 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function GetColumns()
+    {
+        return $this->doGetColumns(ReflectionProperty::IS_PUBLIC);
+    }
+
+    /**
+     * doGetColumns 
      * 
      * @final
      * @access protected
      * @return void
      */
-    protected final function getColumns($type = 0)
+    protected final function doGetColumns($type = 0)
     {
         $type = empty($type) ? ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED : $type;
         $key = get_class($this).$type;
@@ -394,7 +406,7 @@ abstract class MoovicoModel
         $t = "\n";
         $str = '';
 
-        $cols = $this->getColumns(ReflectionProperty::IS_PUBLIC);
+        $cols = $this->GetColumns();
         if ($include_headers == true)
         {
             $vals = array();
