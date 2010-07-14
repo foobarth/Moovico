@@ -50,10 +50,10 @@ abstract class MoovicoController
      * ProcessRawInput 
      * 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function ProcessRawInput()
+    protected final function ProcessRawInput()
     {
         $stdin = file_get_contents('php://input');
         $json = json_decode($stdin);
@@ -68,10 +68,10 @@ abstract class MoovicoController
      * 
      * @param mixed $arg 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function RequireArg(&$arg, $type = 'string', Array $whitelist = array())
+    protected final function RequireArg(&$arg, $type = 'string', Array $whitelist = array())
     {
         if (empty($arg) && $arg !== 0)
         {   
@@ -143,17 +143,29 @@ abstract class MoovicoController
      * @param string $type 
      * @param Array $whitelist 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function RequireParam($name, $type = 'string', Array $whitelist = array())
+    protected final function RequireParam($name, $type = 'string', Array $whitelist = array())
     {
         if (!isset($this->params[$name]))
         {   
             throw new MoovicoException('Required parameter '.$name.' missing.', Moovico::E_CORE_MISSING_PARAM);
         }
 
-        return $this->RequireArg($this->params[$name], $type, $whitelist);
+        try 
+        {
+            return $this->RequireArg($this->params[$name], $type, $whitelist);
+        }
+        catch (MoovicoException $e)
+        {
+            if ($e->getCode() == Moovico::E_CORE_MISSING_PARAM)
+            {
+                throw new MoovicoException('Required parameter '.$name.' missing.', Moovico::E_CORE_MISSING_PARAM);
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -164,10 +176,10 @@ abstract class MoovicoController
      * @param mixed $default 
      * @param Array $whitelist 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function OptionalArg(&$arg, $type = 'string', $default = null, Array $whitelist = array())
+    protected final function OptionalArg(&$arg, $type = 'string', $default = null, Array $whitelist = array())
     {
         if (func_num_args() >= 3 && empty($arg))
         {   
@@ -190,10 +202,10 @@ abstract class MoovicoController
      * @param mixed $default 
      * @param Array $whitelist 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function OptionalParam($name, $type = 'string', $default = null, Array $whitelist = array())
+    protected final function OptionalParam($name, $type = 'string', $default = null, Array $whitelist = array())
     {
         if (func_num_args() >= 3 && empty($this->params[$name]))
         {   
@@ -213,10 +225,10 @@ abstract class MoovicoController
      * 
      * @param mixed $date 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function MangleDate($date = null)
+    protected final function MangleDate($date = null)
     {
         $outformat = 'Y-m-d H:i:s';
         if (empty($date))
@@ -243,10 +255,10 @@ abstract class MoovicoController
      * GetParams 
      * 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function GetParams($selection = null)
+    protected final function GetParams($selection = null)
     {
         if (empty($selection)) 
         {
@@ -272,10 +284,10 @@ abstract class MoovicoController
      * 
      * @param mixed $name 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function GetParam($name)
+    protected final function GetParam($name)
     {
         return $this->params[$name];
     }
@@ -285,10 +297,10 @@ abstract class MoovicoController
      * 
      * @param mixed $token 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function SetSessionToken($token)
+    protected final function SetSessionToken($token)
     {
         $id = session_id();
         if (empty($id))
@@ -303,10 +315,10 @@ abstract class MoovicoController
      * GetSessionToken 
      * 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function GetSessionToken()
+    protected final function GetSessionToken()
     {
         if (empty($_SESSION[self::AUTH_TOKEN_KEY]))
         {
@@ -320,10 +332,10 @@ abstract class MoovicoController
      * RequireSessionToken 
      * 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function RequireSessionToken()
+    protected final function RequireSessionToken()
     {
         if (empty($_SESSION[self::AUTH_TOKEN_KEY]))
         {
@@ -335,10 +347,10 @@ abstract class MoovicoController
      * ClearSessionToken 
      * 
      * @final
-     * @access public
+     * @access protected
      * @return void
      */
-    public final function ClearSessionToken()
+    protected final function ClearSessionToken()
     {
         $id = session_id();
         if (empty($id))
