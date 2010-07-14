@@ -193,30 +193,39 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
 
         if ($use_where && !empty($this->bindings))
         {
-            $tmp = array();
-            foreach ($this->bindings as $idx => $binding)
+            if (empty($this->custom_condition))
             {
-                list($col, $val) = $binding;
-
-                $operator = '=';
-                if (($pos = strpos($col, ' ')) !== false) 
+                $tmp = array();
+                foreach ($this->bindings as $idx => $binding)
                 {
-                    list($real_col, $operator) = explode(' ', $col);
-                    $this->bindings[$idx] = array($real_col, $val);
-                    $col = $real_col;
+                    list($col, $val) = $binding;
+
+                    $operator = '=';
+                    if (($pos = strpos($col, ' ')) !== false) 
+                    {
+                        list($real_col, $operator) = explode(' ', $col);
+                        $this->bindings[$idx] = array($real_col, $val);
+                        $col = $real_col;
+                    }
+
+                    foreach ((array)$val as $val2)
+                    {
+                        $str = is_null($val2)
+                             ? $col.' IS '.($operator == 'NOT' ? 'NOT ' : '').'NULL' 
+                             : $col.' '.$operator.' ?';
+
+                        $tmp[] = $str;
+                    }
                 }
 
-                foreach ((array)$val as $val2)
-                {
-                    $str = is_null($val2)
-                         ? $col.' IS '.($operator == 'NOT' ? 'NOT ' : '').'NULL' 
-                         : $col.' '.$operator.' ?';
-
-                    $tmp[] = $str;
-                }
+                $condition = implode(' '.$this->glue.' ', $tmp);
+            }
+            else
+            {
+                $condition = $this->custom_condition;
             }
 
-            $sql.= ' WHERE '.implode(' '.$this->glue.' ', $tmp);
+            $sql.= ' WHERE '.$condition;
         }
 
         if ($use_order && !empty($this->order_by))

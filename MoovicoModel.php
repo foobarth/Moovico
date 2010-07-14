@@ -245,7 +245,7 @@ abstract class MoovicoModel
      * @access public
      * @return void
      */
-    public final function Read(Array $where = array())
+    public final function Read($bindings_or_condition = array(), $real_bindings = null)
     {
         $columns = $this->doGetColumns();
         $table = static::TABLE;
@@ -254,7 +254,7 @@ abstract class MoovicoModel
         $result = $db->Select($columns)
                      ->From($table)
                      ->Glue($this->glue)
-                     ->Where($where)
+                     ->Where($bindings_or_condition, $real_bindings)
                      ->OrderBy($this->order_by)
                      ->Limit($this->start, $this->maxrows)
                      ->ReturnAs(get_class($this))

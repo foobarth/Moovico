@@ -56,6 +56,14 @@ abstract class MoovicoDBConnector
     protected $bindings;
 
     /**
+     * custom_condition 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $custom_condition;
+
+    /**
      * data 
      * 
      * @var mixed
@@ -368,9 +376,20 @@ abstract class MoovicoDBConnector
      * @access public
      * @return void
      */
-    public final function Where(Array $bindings)
+    public final function Where($bindings_or_condition, $real_bindings = null)
     {
-        $this->bindings = $this->expandParams($bindings);
+        if (is_array($bindings_or_condition))
+        {
+            $real_bindings = $bindings_or_condition;
+            $condition = '';
+        }
+        else
+        {
+            $condition = $bindings_or_condition;
+        }
+
+        $this->bindings = $this->expandParams($real_bindings);
+        $this->custom_condition = $condition;
 
         return $this;
     }
@@ -401,7 +420,7 @@ abstract class MoovicoDBConnector
      */
     public final function OrderBy($column, $direction = null)
     {
-        if (!empty($column))
+        if (!empty($column)) // in case the base model provides an empty array
         {
             if (is_array($column))
             {
@@ -447,7 +466,9 @@ abstract class MoovicoDBConnector
     {
         $expanded = array();
         foreach ($p as $k => $v)
+        {
             $expanded[] = array($k, $v);
+        }
 
         return $expanded;
     }
