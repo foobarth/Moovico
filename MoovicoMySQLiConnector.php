@@ -201,15 +201,17 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 $operator = '=';
                 if (($pos = strpos($col, ' ')) !== false) 
                 {
-                    $newcol = substr($col, 0, $pos);
-                    $operator = substr($col, $pos+1);
-                    $this->bindings[$idx] = array($newcol, $val);
-                    $col = $newcol;
+                    list($real_col, $operator) = explode(' ', $col);
+                    $this->bindings[$idx] = array($real_col, $val);
+                    $col = $real_col;
                 }
 
                 foreach ((array)$val as $val2)
                 {
-                    $str = is_null($val2) ? $col.' IS NULL' : $col.' '.$operator.' ?';
+                    $str = is_null($val2)
+                         ? $col.' IS '.($operator == 'NOT' ? 'NOT ' : '').'NULL' 
+                         : $col.' '.$operator.' ?';
+
                     $tmp[] = $str;
                 }
             }
