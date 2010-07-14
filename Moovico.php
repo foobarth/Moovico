@@ -567,11 +567,13 @@ class Moovico
         if (self::$debug === true)
         {
             $response->debug = self::$debug_stack;
-        }
-
-        foreach ($response->GetHeaders() as $header)
+        } 
+        else // only send headers in non-debug mode
         {
-            header($header);
+            foreach ($response->GetHeaders() as $header)
+            {
+                header($header);
+            }
         }
 
         echo $response;
