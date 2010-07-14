@@ -239,7 +239,7 @@ class Moovico
             $str = $bt[1]['class']
                  . '::'
                  . $bt[1]['function']
-                 . '('.@implode(', ', $bt[1]['args']).")" 
+                 // . '('.@implode(', ', $bt[1]['args']).")" // beware, does not work for all args, thus fatal error!
                  . " [".sprintf("%.2f", $time_needed * 1000).' msec]'
                  . "\n  ".str_replace("\n", "\n  ", print_r($what, true))
                  ;

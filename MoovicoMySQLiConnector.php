@@ -269,6 +269,8 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
             } 
         }
 
+        Moovico::Debug($args);
+
         if (!call_user_func_array(array($stmt, 'bind_param'), $args))
         {
             throw new MoovicoException('Parameter binding failed: '.$stmt->error, Moovico::E_DB_BINDING_FAILED);
