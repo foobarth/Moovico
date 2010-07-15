@@ -85,6 +85,8 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 $vars = $vars[0];
             }
 
+            Moovico::Debug($vars);
+
             $vars = $this->getBindingValues($vars);
 
             $this->cleanVars($vars);
@@ -279,8 +281,6 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 $args[] = &$v;
             } 
         }
-
-        Moovico::Debug($args);
 
         if (!call_user_func_array(array($stmt, 'bind_param'), $args))
         {

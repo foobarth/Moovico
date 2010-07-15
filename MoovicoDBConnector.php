@@ -265,7 +265,7 @@ abstract class MoovicoDBConnector
     public final function Execute()
     {
         $sql = $this->buildQuery();
-        return $this->Query($sql, $this->data + $this->bindings);
+        return $this->Query($sql, array_merge($this->data, $this->bindings));
     }
 
     /**
