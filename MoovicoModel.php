@@ -52,7 +52,7 @@ abstract class MoovicoModel
      * @access public
      * @return void
      */
-    public final function __construct($pk_value = null)
+    public function __construct($pk_value = null)
     {
         if (!empty($pk_value))
         {
@@ -65,11 +65,10 @@ abstract class MoovicoModel
      * 
      * @param mixed $what 
      * @param mixed $value 
-     * @final
      * @access public
      * @return void
      */
-    public final function __set($what, $value)
+    public function __set($what, $value)
     {
         if (!in_array($what, $this->doGetColumns()))
         {
@@ -83,11 +82,10 @@ abstract class MoovicoModel
      * __get 
      * 
      * @param mixed $what 
-     * @final
      * @access public
      * @return void
      */
-    public final function __get($what)
+    public function __get($what)
     {
         return $this->$what; // will not be used if someone iterates this object
     }
@@ -96,11 +94,10 @@ abstract class MoovicoModel
      * Init 
      * 
      * @param Array $data 
-     * @final
      * @access public
      * @return void
      */
-    public final function Init($data)
+    public function Init($data)
     {
         if (!is_array($data))
         {
@@ -121,11 +118,10 @@ abstract class MoovicoModel
      * 
      * @param mixed $column 
      * @param mixed $direction 
-     * @final
      * @access public
      * @return void
      */
-    public final function OrderBy($column, $direction = null)
+    public function OrderBy($column, $direction = null)
     {
         if (is_array($column))
         {
@@ -147,11 +143,10 @@ abstract class MoovicoModel
      * 
      * @param mixed $start 
      * @param mixed $maxrows 
-     * @final
      * @access public
      * @return void
      */
-    public final function Limit($start, $maxrows)
+    public function Limit($start, $maxrows)
     {
         $this->start = (int)$start;
         $this->maxrows = (int)$maxrows;
@@ -163,11 +158,10 @@ abstract class MoovicoModel
      * Glue 
      * 
      * @param mixed $glue 
-     * @final
      * @access public
      * @return void
      */
-    public final function Glue($glue)
+    public function Glue($glue)
     {
         $this->glue = $glue;
 
@@ -181,7 +175,7 @@ abstract class MoovicoModel
      * @access public
      * @return void
      */
-    public final function Load($pk_value)
+    public function Load($pk_value)
     {
         $where = is_array($pk_value) ? $pk_value : array(static::PK => $pk_value);
         $result = $this->Read($where);
@@ -191,11 +185,10 @@ abstract class MoovicoModel
     /**
      * Reload 
      * 
-     * @final
      * @access public
      * @return void
      */
-    public final function Reload()
+    public function Reload()
     {
         $this->Load($this->{static::PK});
     }
@@ -204,11 +197,10 @@ abstract class MoovicoModel
      * Create 
      * 
      * @param Array $what 
-     * @final
      * @access public
      * @return void
      */
-    public final function Create(Array $what = array())
+    public function Create(Array $what = array())
     {
         $table = static::TABLE;
         $use_this = empty($what);
@@ -241,11 +233,10 @@ abstract class MoovicoModel
      * Read 
      * 
      * @param Array $where 
-     * @final
      * @access public
      * @return void
      */
-    public final function Read($bindings_or_condition = array(), $real_bindings = null)
+    public function Read($bindings_or_condition = array(), $real_bindings = null)
     {
         $columns = $this->doGetColumns();
         $table = static::TABLE;
@@ -277,11 +268,10 @@ abstract class MoovicoModel
     /**
      * TotalRows 
      * 
-     * @final
      * @access public
      * @return void
      */
-    public final function TotalRows()
+    public function TotalRows()
     {
         $db = Moovico::GetDB();
         return $db->TotalRows();
@@ -292,11 +282,10 @@ abstract class MoovicoModel
      * 
      * @param Array $what 
      * @param mixed $pk_value 
-     * @final
      * @access public
      * @return void
      */
-    public final function Update(Array $what = array(), $pk_value = null)
+    public function Update(Array $what = array(), $pk_value = null)
     {
         $table = static::TABLE;
         $where = array(static::PK => (!empty($pk_value) ? $pk_value : $this->{static::PK}));
@@ -327,11 +316,10 @@ abstract class MoovicoModel
      * Delete 
      * 
      * @param Array $where 
-     * @final
      * @access public
      * @return void
      */
-    public final function Delete(Array $where = array())
+    public function Delete(Array $where = array())
     {
         $table = static::TABLE;
         $use_this = empty($where);
@@ -354,11 +342,10 @@ abstract class MoovicoModel
     /**
      * GetColumns 
      * 
-     * @final
      * @access public
      * @return void
      */
-    public final function GetColumns()
+    public function GetColumns()
     {
         return $this->doGetColumns(ReflectionProperty::IS_PUBLIC);
     }
@@ -366,11 +353,10 @@ abstract class MoovicoModel
     /**
      * doGetColumns 
      * 
-     * @final
      * @access protected
      * @return void
      */
-    protected final function doGetColumns($type = 0)
+    protected function doGetColumns($type = 0)
     {
         $type = empty($type) ? ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED : $type;
         $key = get_class($this).$type;
@@ -395,17 +381,12 @@ abstract class MoovicoModel
      * toCSV 
      * 
      * @param mixed $include_headers 
-     * @final
      * @access public
      * @return void
      */
-    public final function toCSV($include_headers = false)
+    public function toCSV($include_headers = false, $e = '"', $s = ';', $t = "\n")
     {
-        $e = '"';
-        $s = ';';
-        $t = "\n";
         $str = '';
-
         $cols = $this->GetColumns();
         if ($include_headers == true)
         {
