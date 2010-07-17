@@ -153,7 +153,7 @@ class Moovico
      */
     public static function LoadConf()
     {
-        $file = realpath(self::$app_root.'Conf/'.self::$url['host'].'.ini');
+        $file = realpath(self::$app_root.'conf/'.self::$url['host'].'.ini');
         if (!$file)
         {
             throw new MoovicoException('Config file for host "'.self::$url['host'].'" not found', Moovico::E_CORE_NO_CONFIG);
@@ -329,14 +329,14 @@ class Moovico
      */
     public static function GetClassPath($class)
     {
-        $path = self::$app_root.'Lib/'; // assume a locally available class in Lib
-        if (strpos($class, 'Moovico') !== 0) // no Lib file
+        $path = self::$app_root.'lib/'; // assume a locally available class in 'lib'
+        if (strpos($class, 'Moovico') !== 0) // no Moovico lib file
         {
             foreach (array('Model', 'Controller', 'Plugin') as $suffix)
             {
                 if (substr($class, (strlen($suffix) * -1)) == $suffix)
                 {
-                    $path = self::$app_root.$suffix.'s/';
+                    $path = self::$app_root.strtolower($suffix).'s/';
                     break;
                 }
             }

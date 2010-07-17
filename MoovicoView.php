@@ -33,7 +33,7 @@ class MoovicoView
      */
     public function __construct($template_file)
     {
-        $this->template_file = Moovico::GetAppRoot().'Views/'.Moovico::SanitizeFile($template_file).'.phtml';
+        $this->template_file = Moovico::GetAppRoot().'views/'.Moovico::SanitizeFile($template_file).'.phtml';
         if (!file_exists($this->template_file))
         {
             throw new MoovicoException('View file not found: '.$this->template_file, Moovico::E_VIEW_NO_TEMPLATE);
