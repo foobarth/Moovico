@@ -29,6 +29,8 @@ class MoovicoDebugResponse extends MoovicoResponseInterface
     public function __toString()
     {
         $this->moovico_time = Moovico::GetTime();
+
+        header('Content-Type: text/plain; charset=utf-8');
         return print_r($this, true);
     }
 }

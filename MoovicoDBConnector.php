@@ -185,7 +185,7 @@ abstract class MoovicoDBConnector
      */
     public final static function DetectType($sql)
     {
-        switch (strtoupper(substr($sql, 0, 6)))
+        switch (strtoupper(substr(trim($sql), 0, 6)))
         {
             case 'SELECT': return self::SQL_TYPE_SELECT;
             case 'INSERT': return self::SQL_TYPE_INSERT;
@@ -255,6 +255,33 @@ abstract class MoovicoDBConnector
      * @return void
      */
     abstract public function TotalRows();
+
+    /**
+     * BeginTransaction 
+     * 
+     * @abstract
+     * @access public
+     * @return void
+     */
+    abstract public function BeginTransaction();
+
+    /**
+     * Commit 
+     * 
+     * @abstract
+     * @access public
+     * @return void
+     */
+    abstract public function Commit();
+
+    /**
+     * Rollback 
+     * 
+     * @abstract
+     * @access public
+     * @return void
+     */
+    abstract public function Rollback();
 
     /**
      * Execute 

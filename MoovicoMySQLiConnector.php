@@ -64,6 +64,8 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
      */
     public function Query($sql)
     {
+        Moovico::Debug($sql);
+
         $stmt = $this->db->prepare($sql);
         if (empty($stmt))
         {
@@ -85,9 +87,10 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 $vars = $vars[0];
             }
 
-            Moovico::Debug($vars);
-
-            $vars = $this->getBindingValues($vars);
+            if (isset($vars[0]) && is_array($vars[0]))
+            {
+                $vars = $this->getBindingValues($vars);
+            }
 
             $this->cleanVars($vars);
             $this->bindVars($stmt, $vars);
@@ -142,6 +145,41 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
         $res = $this->Query('SELECT FOUND_ROWS() TOTAL');
 
         return $res[0]->TOTAL;
+    }
+
+    /**
+     * BeginTransaction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function BeginTransaction()
+    {
+        $this->db->autocommit(false);
+    }
+
+    /**
+     * Commit 
+     * 
+     * @access public
+     * @return void
+     */
+    public function Commit()
+    {
+        $this->db->commit();
+        $this->db->autocommit(true);
+    }
+
+    /**
+     * Rollback 
+     * 
+     * @access public
+     * @return void
+     */
+    public function Rollback()
+    {
+        $this->db->rollback();
+        $this->db->autocommit(true);
     }
 
     /**
@@ -246,8 +284,6 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
             $sql.= ' LIMIT '.(int)$this->start.', '.(int)$this->maxrows;
         }
 
-        Moovico::Debug($sql);
-
         return $sql;
     }
 
@@ -270,17 +306,19 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 {
                     if (!is_null($v2))
                     {
-                        $args[0].= is_int($v2) ? 'i' : 's';
+                        $args[0].= is_numeric($v2) ? 'i' : 's';
                         $args[] = &$v2;
                     }
                 }
             } 
             else 
             {
-                $args[0].= is_int($v) ? 'i' : 's';
+                $args[0].= is_numeric($v) ? 'i' : 's';
                 $args[] = &$v;
             } 
         }
+
+        Moovico::Debug($args);
 
         if (!call_user_func_array(array($stmt, 'bind_param'), $args))
         {
