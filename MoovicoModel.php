@@ -345,9 +345,15 @@ abstract class MoovicoModel
      * @access public
      * @return void
      */
-    public function GetColumns()
+    public function GetColumns($asString = false)
     {
-        return $this->doGetColumns(ReflectionProperty::IS_PUBLIC);
+        $cols = $this->doGetColumns(ReflectionProperty::IS_PUBLIC);
+        if ($asString) 
+        {
+            $cols = implode(', ', $cols);
+        }
+
+        return $cols;
     }
 
     /**
