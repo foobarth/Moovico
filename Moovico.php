@@ -136,6 +136,7 @@ class Moovico
         self::$time_start = microtime(true);
         self::$time_checkpoint = self::$time_start;
         self::$app_root = isset($_SERVER['MOOVICO_APP_ROOT']) ? $_SERVER['MOOVICO_APP_ROOT'] : '../';
+        ini_set('error_log', self::$app_root.'logs/php-errors.log');
         spl_autoload_register(array(__CLASS__, '__autoload'));
         set_exception_handler(array(__CLASS__, '__exceptionHandler'));
         self::startSession();
