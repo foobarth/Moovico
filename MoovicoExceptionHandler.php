@@ -11,6 +11,7 @@ class MoovicoExceptionHandler extends MoovicoExceptionHandlerInterface
      */
     public function Handle(Exception $e)
     {
+        error_log($e->getMessage());
         return $e; // haha
     }
 }
