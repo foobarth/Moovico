@@ -57,7 +57,16 @@ abstract class MoovicoController
     {
         $stdin = file_get_contents('php://input');
         $json = json_decode($stdin);
-        $put = is_null($json) == false ? (array)$json : array('PUT' => $stdin);
+
+        if (!is_null($json)) 
+        {
+            $put = (array)$json;
+        } 
+        else 
+        {
+            parse_str($stdin, $put);
+        }
+
         $this->params = array_merge($put, $_GET, $_POST);
 
         return $this;
