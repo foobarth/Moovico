@@ -99,16 +99,16 @@ abstract class MoovicoModel
      */
     public function Init($data)
     {
-        if (!is_array($data))
+        if (is_array($data))
         {
-            $data = (array)$data;
+            $data = (object)$data;
         }
 
         foreach ($this->doGetColumns() as $prop)
         {
-            if (isset($data[$prop]))
+            if (isset($data->{$prop}))
             {
-                $this->{$prop} = $data[$prop];
+                $this->{$prop} = $data->{$prop};
             }
         }
     }
