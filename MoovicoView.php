@@ -72,10 +72,10 @@ class MoovicoView
      * __get 
      * 
      * @param mixed $what 
-     * @access protected
+     * @access public
      * @return void
      */
-    protected function __get($what)
+    public function __get($what)
     {
         if (!empty($this->payload->{$what}))
         {
