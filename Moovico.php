@@ -135,13 +135,13 @@ class Moovico
     {
         self::$time_start = microtime(true);
         self::$time_checkpoint = self::$time_start;
-        self::$app_root = isset($_SERVER['MOOVICO_APP_ROOT']) ? $_SERVER['MOOVICO_APP_ROOT'] : '../';
+        self::parseURL();
+        self::findAppRoot();
         ini_set('error_log', self::$app_root.'logs/php-errors.log');
         spl_autoload_register(array(__CLASS__, '__autoload'));
         set_exception_handler(array(__CLASS__, '__exceptionHandler'));
         self::startSession();
         self::RegisterExceptionHandler('MoovicoException', new MoovicoExceptionHandler());
-        self::parseURL();
         self::LoadConf();
     }
 
@@ -451,6 +451,31 @@ class Moovico
         }
 
         return self::$plugins[$name];
+    }
+
+    /**
+     * findAppRoot 
+     * 
+     * @static
+     * @access protected
+     * @return void
+     */
+    protected static function findAppRoot()
+    {
+        if (!empty($_SERVER['MOOVICO_APP_ROOT']))
+        {
+            self::$app_root = $_SERVER['MOOVICO_APP_ROOT'];
+            return;
+        }
+
+        $test = realpath($_SERVER['DOCUMENT_ROOT'].'/../conf/'.self::$url['host'].'.ini');
+        if ($test)
+        {
+            self::$app_root = realpath($_SERVER['DOCUMENT_ROOT'].'/../.').'/';
+            return;
+        }
+
+        self::$app_root = '../';
     }
 
     /**
