@@ -39,7 +39,7 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
     {
         parent::__construct();
 
-        $this->filename = preg_replace('/\W/', '', $filename);
+        $this->filename = preg_replace('/\W\./', '', $filename);
         $this->data = $data;
     }
 
