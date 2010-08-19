@@ -306,14 +306,14 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 {
                     if (!is_null($v2))
                     {
-                        $args[0].= is_numeric($v2) ? 'i' : 's';
+                        $args[0].= is_numeric($v2) ? (is_float($v2) ? 'd' : 'i') : 's';
                         $args[] = &$v2;
                     }
                 }
             } 
             else 
             {
-                $args[0].= is_numeric($v) ? 'i' : 's';
+                $args[0].= is_numeric($v) ? (is_float($v) ? 'd' : 'i') : 's';
                 $args[] = &$v;
             } 
         }
