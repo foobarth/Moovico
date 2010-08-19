@@ -306,14 +306,14 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 {
                     if (!is_null($v2))
                     {
-                        $args[0].= is_numeric($v2) ? (is_float($v2) ? 'd' : 'i') : 's';
+                        $args[0].= $this->getDataType($v2);
                         $args[] = &$v2;
                     }
                 }
             } 
             else 
             {
-                $args[0].= is_numeric($v) ? (is_float($v) ? 'd' : 'i') : 's';
+                $args[0].= $this->getDataType($v);
                 $args[] = &$v;
             } 
         }
@@ -324,6 +324,23 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
         {
             throw new MoovicoException('Parameter binding failed: '.$stmt->error, Moovico::E_DB_BINDING_FAILED);
         }
+    }
+
+    /**
+     * getDataType 
+     * 
+     * @param mixed $v 
+     * @access protected
+     * @return void
+     */
+    protected function getDataType($v) 
+    {
+        if (!is_numeric($v)) 
+        {
+            return 's';
+        }
+
+        return preg_match('/^\d+$/', $v) ? 'i' : 'd';
     }
 
     /**
