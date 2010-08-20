@@ -576,6 +576,9 @@ class Moovico
      */
     protected static function sendResponse()
     {
+        // don't output anything if our response is === null
+        if (is_null(self::$response)) return;
+
         if (self::$response instanceof MoovicoResponse || self::$response instanceof Exception) // autoconvert format
         {
             $response = self::createResponse(self::$response);
