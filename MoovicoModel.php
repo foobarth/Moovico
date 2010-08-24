@@ -114,6 +114,33 @@ abstract class MoovicoModel
     }
 
     /**
+     * Diff 
+     * 
+     * @param mixed $data 
+     * @access public
+     * @return void
+     */
+    public function Diff($data) 
+    {
+        $diff = array();
+
+        if (is_array($data))
+        {
+            $data = (object)$data;
+        }
+
+        foreach ($this->doGetColumns() as $prop)
+        {
+            if (isset($data->{$prop}) && $this->{$prop} != $data->{$prop})
+            {
+                $diff[$prop] = array($this->{$prop}, $data->{$prop});
+            }
+        }
+
+        return $diff;
+    }
+
+    /**
      * OrderBy 
      * 
      * @param mixed $column 
