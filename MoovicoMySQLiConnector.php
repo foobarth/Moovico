@@ -248,11 +248,21 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                         $col = $real_col;
                     }
 
+                    if (!is_array($val)) 
+                    {
+                        $val = array($val);
+                    }
                     foreach ((array)$val as $val2)
                     {
-                        $str = is_null($val2)
-                             ? $col.' IS '.($operator == 'NOT' ? 'NOT ' : '').'NULL' 
-                             : $col.' '.$operator.' ?';
+                        if (is_null($val2))
+                        {
+                            $str = $col.' IS '.($operator == 'NOT' ? 'NOT ' : '').'NULL';
+                            unset($this->bindings[$idx]); // remove the null value from bindings
+                        }
+                        else
+                        {
+                            $str = $col.' '.$operator.' ?';
+                        }
 
                         $tmp[] = $str;
                     }
