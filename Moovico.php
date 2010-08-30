@@ -185,6 +185,24 @@ class Moovico
     }
 
     /**
+     * GetAppSetting 
+     * 
+     * @param mixed $setting 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function GetAppSetting($setting)
+    {
+        if (isset(self::$conf['app'][$setting]))
+        {
+            return self::$conf['app'][$setting];
+        }
+
+        return null
+    }
+
+    /**
      * TODO: short description.
      * 
      * @return TODO
