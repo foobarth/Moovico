@@ -199,7 +199,7 @@ class Moovico
             return self::$conf['app'][$setting];
         }
 
-        return null
+        return null;
     }
 
     /**
