@@ -29,18 +29,45 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
     public $data;
 
     /**
+     * enclosed 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $enclosed;
+
+    /**
+     * terminated 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $terminated;
+
+    /**
+     * seperated 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $seperated;
+
+    /**
      * __construct 
      * 
      * @param mixed $filename 
      * @access public
      * @return void
      */
-    public function __construct($filename, $data)
+    public function __construct($filename, $data, $e = '"', $s = ';', $t = "\n")
     {
         parent::__construct();
 
         $this->filename = preg_replace('/\W\./', '', $filename);
         $this->data = $data;
+        $this->seperated = $s;
+        $this->enclosed = $e;
+        $this->terminated = $t;
     }
 
     /**
@@ -69,7 +96,8 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
         $str = '';
         foreach ($this->data as $idx => $row)
         {
-            $str.= $row->toCSV($idx === 0); // print headers on first row
+            $str.= $row->toCSV($idx === 0, $this->enclosed, 
+                    $this->seperated, $this->terminated); // print headers on first row
         }
         
         return $str;
