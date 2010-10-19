@@ -400,12 +400,26 @@ class Moovico
             }
             catch (Exception $e) 
             { 
-                throw $e;
+                self::lastExit($e);
             }
         }
 
         // last exit
-        throw $e;
+        self::lastExit($e);
+    }
+
+    /**
+     * lastExit 
+     * 
+     * @param Exception $e 
+     * @static
+     * @access protected
+     * @return void
+     */
+    protected static function lastExit(Exception $e)
+    {
+        trigger_error($e, E_USER_ERROR);
+        exit;
     }
 
     /**
