@@ -23,6 +23,7 @@ class MoovicoException extends Exception
             $code = crc32($trace[0]['class'].$msg); // auto generate a code
         }
 
+        Moovico::Debug($msg, $code);
         parent::__construct($msg, $code);
     }
 }

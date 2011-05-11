@@ -45,7 +45,7 @@ class MoovicoRoute
      * 
      * @var mixed
      */
-    protected $params;
+    protected $args;
 
     /**
      * format 
@@ -113,7 +113,7 @@ class MoovicoRoute
             $i++;
         }
 
-        $this->params = !empty($m) ? $m : array();
+        $this->args = !empty($m) ? $m : array();
 
         return true;
     }
@@ -154,9 +154,9 @@ class MoovicoRoute
      * 
      * @return TODO
      */
-    public function GetParams()
+    public function GetArgs()
     {
-        return $this->params;
+        return $this->args;
     }
 
     /**

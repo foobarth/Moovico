@@ -19,6 +19,7 @@ class Moovico
     const E_CORE_INVALID_FORMAT     = 109;
     const E_CORE_NO_PLUGIN          = 110;
     const E_CORE_PLUGIN_HALT        = 111;
+    const E_CORE_INVALID_METHOD     = 112;
 
     const E_SESSION_NO_SESSION      = 201;
     const E_SESSION_NO_TOKEN        = 202;
@@ -255,12 +256,13 @@ class Moovico
         {
             $bt = debug_backtrace();
             $time_needed = self::GetTime(true);
+            $args = func_num_args() > 1 ? func_get_args() : $what;
             $str = $bt[1]['class']
                  . '::'
                  . $bt[1]['function']
                  // . '('.@implode(', ', $bt[1]['args']).")" // beware, does not work for all args, thus fatal error!
                  . " [".sprintf("%.2f", $time_needed * 1000).' msec]'
-                 . "\n  ".str_replace("\n", "\n  ", print_r($what, true))
+                 . "\n  ".str_replace("\n", "\n  ", print_r($args, true))
                  ;
 
             self::$debug_stack[] = $str;
@@ -486,6 +488,23 @@ class Moovico
     }
 
     /**
+     * Forward 
+     * 
+     * @param mixed $controller 
+     * @param mixed $action 
+     * @param mixed $params 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function Forward(MoovicoRequestMessage $msg) 
+    {
+        $response = self::doRunController($msg);
+
+        return $response;
+    }
+
+    /**
      * findAppRoot 
      * 
      * @static
@@ -566,26 +585,41 @@ class Moovico
     }
 
     /**
-     * TODO: short description.
+     * Run the controller (default case)
      * 
      * @return TODO
      */
     protected static function runController()
     {
-        $class = self::getControllerClassName(self::$route->GetController());
-        if (!class_exists($class))
-        {
-            throw new MoovicoException('Class not found: '.$class, Moovico::E_CORE_NO_CONTROLLER);
-        }
-        self::Debug("Loaded class $class");
+        $msg = new MoovicoRequestMessage(self::$route);
+        self::$response = self::doRunController($msg);
+    }
 
-        $controller = new $class();
-        $action = self::getControllerMethod(self::$route->GetAction());
+    /**
+     * doRunController 
+     * 
+     * @param MoovicoRequestMessage $msg 
+     * @static
+     * @access protected
+     * @return void
+     */
+    protected static function doRunController(MoovicoRequestMessage $msg)
+    {
+        self::Debug($msg);
+        $className = self::getControllerClassName($msg->GetController());
+        if (!class_exists($className))
+        {
+            throw new MoovicoException('Class not found: '.$className, Moovico::E_CORE_NO_CONTROLLER);
+        }
+        self::Debug("Loaded class $className");
+
+        $controller = new $className;
+        $action = self::getControllerMethod($msg->GetAction());
 
         if ($controller instanceof MoovicoRESTInterface)
         {
-            $method = $_SERVER['REQUEST_METHOD'];
-            $action = self::$route->GetAction() == MoovicoRoute::DEFAULT_ACTION ? $method : $action.'_'.$method;
+            $requestMethod = $msg->GetRequestMethod();
+            $action = $msg->IsDefaultAction() ? $requestMethod : $action.'_'.$requestMethod;
             self::Debug("Using REST interface: $action");
         }
 
@@ -594,11 +628,18 @@ class Moovico
             throw new MoovicoException('Method not found: '.$action, Moovico::E_CORE_NO_ACTION);
         }
 
-        $params = self::$route->GetParams();
+        // Overwrite request params with the ones provided (if any)
+        $params = $msg->GetParams();
+        if (!empty($params)) {
+            $controller->SetParams($params);
+        }
 
-        self::Debug('Calling '.$class.'::'.$action.'('.implode(', ', $params).')');
+        $args = $msg->GetArgs();
+        self::Debug('Calling '.$className.'::'.$action.'('.implode(', ', $args).')');
         self::Fire('onAction', $controller);
-        self::$response = call_user_func_array(array($controller, $action), $params);
+        $response = call_user_func_array(array($controller, $action), $args);
+
+        return $response;
     }
 
     /**

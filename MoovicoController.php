@@ -43,7 +43,20 @@ abstract class MoovicoController
             return;
         }
 
-        $this->params = array_merge($_GET, $_POST);
+        $this->SetParams(array_merge($_GET, $_POST));
+    }
+
+    /**
+     * SetParams
+     *
+     * Used to overwrite environment params - used in request forwarding, use with caution!
+     * 
+     * @param Array $params 
+     * @access public
+     * @return void
+     */
+    public function SetParams(Array $params) {
+        $this->params = $params;
     }
 
     /**
@@ -67,7 +80,7 @@ abstract class MoovicoController
             parse_str($stdin, $put);
         }
 
-        $this->params = array_merge($put, $_GET, $_POST);
+        $this->SetParams(array_merge($this->params, $put, $_GET, $_POST));
 
         return $this;
     }
