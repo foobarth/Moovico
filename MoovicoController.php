@@ -27,7 +27,7 @@ abstract class MoovicoController
      * @var mixed
      * @access protected
      */
-    protected $params;
+    protected $params = array();
 
     /**
      * __construct 
