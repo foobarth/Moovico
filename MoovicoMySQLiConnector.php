@@ -49,7 +49,7 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
 
         $this->Query('SET sql_mode = TRADITIONAL');
 
-        Moovico::Debug("Connected to {$conf['host']}/{$conf['name']}");
+        Moovico::Debug("Connected with  {$conf['user']}@{$conf['host']}/{$conf['name']}");
 
         return $this;
     }
