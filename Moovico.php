@@ -223,6 +223,19 @@ class Moovico
     }
 
     /**
+     * LogError 
+     * 
+     * @param mixed $error 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function LogError($error) 
+    {
+        error_log($error, 0);
+    }
+
+    /**
      * setDebug 
      * 
      * @param mixed $debug 
