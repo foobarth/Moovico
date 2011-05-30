@@ -28,8 +28,6 @@ class MoovicoPlainTextResponse extends MoovicoResponseInterface
      */
     public function __toString()
     {
-        $this->moovico_time = Moovico::GetTime();
-
         $str = '';
         foreach ($this as $k => $v)
         {
