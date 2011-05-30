@@ -9,6 +9,14 @@
 class MoovicoPlainTextResponse extends MoovicoResponseInterface
 {
     /**
+     * content 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    public $content = '';
+
+    /**
      * GetHeaders 
      * 
      * @access public
@@ -28,9 +36,14 @@ class MoovicoPlainTextResponse extends MoovicoResponseInterface
      */
     public function __toString()
     {
-        $str = '';
+        $str = $this->content;
+
         foreach ($this as $k => $v)
         {
+            if ($k == 'content') {
+                continue;
+            }
+
             $str.= sprintf("%s: %s", $k, $v);
         }
 
