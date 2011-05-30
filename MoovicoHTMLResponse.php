@@ -54,8 +54,11 @@ class MoovicoHTMLResponse extends MoovicoResponseInterface
     public function __toString()
     {
         $out = $this->view->Render($this);
+
+        /*
         $moovico_time = Moovico::GetTime();
         $out.= '<!-- Moovico time: '.$moovico_time.' sec -->';
+        */
 
         return $out;
     }
