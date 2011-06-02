@@ -227,7 +227,7 @@ abstract class MoovicoModel
      * @access public
      * @return void
      */
-    public function Create(Array $what = array())
+    public function Create(Array $what = array(), $onDuplicateKeyUpdate = false)
     {
         $table = static::TABLE;
         $use_this = empty($what);
@@ -245,6 +245,7 @@ abstract class MoovicoModel
         $db = Moovico::GetDB();
         $result = $db->Insert($what)
                      ->Into($table)
+                     ->OnDuplicateKeyUpdate($onDuplicateKeyUpdate)
                      ->Execute()
                      ;
 
@@ -254,6 +255,19 @@ abstract class MoovicoModel
         }
 
         return $result;
+    }
+
+    /**
+     * Save 
+     *
+     * Convenient wrapper to store THIS object in the db,
+     * automatically performing an update if a duplicate key is found
+     * 
+     * @access public
+     * @return void
+     */
+    public function Save() {
+        return $this->Create(array(), true);
     }
 
     /**
