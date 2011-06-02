@@ -813,6 +813,22 @@ class Moovico
     {
         return str_replace('..', '', $file);
     }
+
+    /**
+     * ShowError 
+     * 
+     * @param mixed $code 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function ShowError($code) {
+        switch ($code) {
+            case 404:
+                header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found"); 
+                die("404 Not Found");
+        }
+    }
 }
 
 // self invoking if configured as fcgi handler
