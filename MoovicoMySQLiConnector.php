@@ -211,6 +211,17 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
                 }
                 $sql.= implode(', ', $tmp);
                 $sql.= ')';
+
+                if ($this->on_duplicate_key_update === true) {
+                    $tmp = array();
+                    foreach ($columns as $c) {
+                        $tmp[] = "$c = VALUES($c)";    
+                    }
+
+                    $sql.= ' ON DUPLICATE KEY UPDATE ';
+                    $sql.= implode(', ', $tmp);
+                }
+
                 break;
 
             case self::SQL_TYPE_UPDATE:
@@ -345,8 +356,12 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
      */
     protected function getDataType($v) 
     {
-        if (!is_numeric($v)) 
-        {
+        if (!is_numeric($v)) {
+            return 's';
+        }
+
+        // mysqli supports max 16 digits, so we need a string binding
+        if (strlen($v) > 16) {
             return 's';
         }
 
