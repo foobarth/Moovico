@@ -112,6 +112,14 @@ abstract class MoovicoDBConnector
     protected $glue;
 
     /**
+     * on_duplicate_key_update 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $on_duplicate_key_update;
+
+    /**
      * __construct 
      * 
      * @access protected
@@ -142,6 +150,7 @@ abstract class MoovicoDBConnector
         $this->start = 0;
         $this->maxrows = 0;
         $this->glue = 'AND';
+        $this->on_duplicate_key_update = false;
     }
 
     /**
@@ -478,6 +487,20 @@ abstract class MoovicoDBConnector
     {
         $this->start = (int)$start;
         $this->maxrows = (int)$maxrows;
+
+        return $this;
+    }
+
+    /**
+     * OnDuplicateKeyUpdate 
+     * 
+     * @param mixed $enable 
+     * @final
+     * @access public
+     * @return void
+     */
+    public final function OnDuplicateKeyUpdate($enable) {
+        $this->on_duplicate_key_update = $enable === true;
 
         return $this;
     }
