@@ -65,7 +65,13 @@ class MoovicoExtJSONResponse extends MoovicoJSONResponse
     public function Error($msg)
     {
         $this->Success(false);
-        $this->msg = $msg;
+
+        if ($msg instanceof Exception) {
+            $this->msg = $msg->getMessage();
+            $this->error_code = $msg->getCode();
+        } else {
+            $this->msg = $msg;
+        }
     }
 }
 
