@@ -347,10 +347,28 @@ class Moovico
      */
     public static function __autoload($class)
     {
+        return self::LoadClass($class);
+    }
+
+    /**
+     * LoadClass 
+     * 
+     * @param mixed $class 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function LoadClass($class) 
+    {
         self::Debug("Loading class $class");
-        $file = self::SanitizeFile($class);
+
         $path = self::GetClassPath($class);
-        require($path.$file.'.php');
+        $path = self::SanitizeFile($path);
+		if (!file_exists($path) || !is_readable($path)) {
+            return false;
+		}
+
+        require($path);
     }
 
     /**
@@ -363,23 +381,31 @@ class Moovico
      */
     public static function GetClassPath($class)
     {
-        $path = self::$app_root.'lib/'; // assume a locally available class in 'lib'
-        if (strpos($class, 'Moovico') !== 0) // no Moovico lib file
-        {
-            foreach (array('Model', 'Controller', 'Plugin') as $suffix)
-            {
-                if (substr($class, (strlen($suffix) * -1)) == $suffix)
-                {
-                    $path = self::$app_root.strtolower($suffix).'s/';
-                    break;
-                }
-            }
-        }
-        else
-        {
-            $path = ''; // include a Moovico Class
+        // extract namespaces as path
+        $ext = '.php';
+        $path = $class.$ext;
+        if (strpos($class, '_') > 0) {
+            $path = preg_replace('/_+/', DIRECTORY_SEPARATOR, $class);
+            $path.= $ext;
         }
 
+        // Moovico Core Lib
+        if (strpos($class, 'Moovico') === 0) {
+            return $path; // no mangling necessary, Classname = Filename
+        }
+
+        // Application MVC Classes
+        foreach (array('Model', 'Controller', 'Plugin') as $suffix)
+        {
+            if (substr($class, (strlen($suffix) * -1)) == $suffix)
+            {
+                $path = self::$app_root.strtolower($suffix).'s'.DIRECTORY_SEPARATOR.$path;
+                return $path;
+            }
+        }
+
+        // App Library Classes
+        $path = self::$app_root.'lib'.DIRECTORY_SEPARATOR.$path;
         return $path;
     }
 
