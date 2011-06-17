@@ -79,7 +79,7 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
     public function GetHeaders()
     {
         return array(
-            'Pragma: public',
+            'Pragma: private',
             'Expires: 0',
             'Cache-Control: must-revalidate, post-check=0, pre-check=0',
             'Cache-Control: private',
