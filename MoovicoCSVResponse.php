@@ -79,9 +79,13 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
     public function GetHeaders()
     {
         return array(
+            'Pragma: public',
+            'Expires: 0',
+            'Cache-Control: must-revalidate, post-check=0, pre-check=0',
+            'Cache-Control: private',
             'Content-Type: application/csv',
             'Content-Disposition: attachment; filename='.$this->filename,
-            'Pragma: no-cache'
+            'Content-Transfer-Encoding: binary'
         );
     }
 
