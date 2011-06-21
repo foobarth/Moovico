@@ -144,6 +144,7 @@ class Moovico
         self::startSession();
         self::RegisterExceptionHandler('MoovicoException', new MoovicoExceptionHandler());
         self::LoadConf();
+        self::AssertPrerequisites();
     }
 
     /**
@@ -183,6 +184,42 @@ class Moovico
                 self::AddPlugin($name, new $plugin);
             }
         }
+    }
+
+    /**
+     * AssertPrerequisites 
+     * 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function AssertPrerequisites() {
+        // require ssl ?
+        if (isset(self::$conf['global']['require_ssl']) && self::$conf['global']['require_ssl'] == true) {
+            self::RequireSSL();
+        }
+    }
+
+    /**
+     * RequireSSL 
+     * 
+     * @final
+     * @access protected
+     * @return void
+     */
+    public static final function RequireSSL() {
+        // php https hint
+        if (!empty($_SERVER['HTTPS'])) {
+            return;
+        }
+
+        // Port check
+        if ($_SERVER['SERVER_PORT'] == '443') {
+            return;
+        }
+
+        header('Location: https://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+        exit;
     }
 
     /**
