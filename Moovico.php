@@ -428,7 +428,7 @@ class Moovico
 
         // Moovico Core Lib
         if (strpos($class, 'Moovico') === 0) {
-            return $path; // no mangling necessary, Classname = Filename
+            return dirname(__FILE__).DIRECTORY_SEPARATOR.$path; // no mangling necessary, Classname = Filename
         }
 
         // Application MVC Classes
