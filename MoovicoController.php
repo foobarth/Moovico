@@ -229,9 +229,10 @@ abstract class MoovicoController
      */
     protected final function OptionalParam($name, $type = 'string', $default = null, Array $whitelist = array())
     {
-        if (func_num_args() >= 3 && empty($this->params[$name]))
-        {   
-            $this->params[$name] = $default;
+        // default values
+        if (func_num_args() >= 3)
+        {
+            $this->SetDefaultValue($name, $type, $default);
         }
 
         if (!empty($this->params[$name]) || (isset($this->params[$name]) && $this->params[$name] === 0))
@@ -240,6 +241,37 @@ abstract class MoovicoController
         }
 
         return $this;
+    }
+
+    /**
+     * SetDefaultValue 
+     * 
+     * @param mixed $name 
+     * @param mixed $type 
+     * @final
+     * @access protected
+     * @return void
+     */
+    protected final function SetDefaultValue($name, $type, $default) {
+        if (!isset($this->params[$name])) {
+            $this->params[$name] = $default;
+            return;
+        }
+
+        if (!empty($this->params[$name])) {
+            return;
+        }
+
+        switch ($type) {
+            case 'int':
+            case 'integer':
+            case 'float':
+                if (strlen($this->params[$name]) > 0) {
+                    return;
+                }
+        }
+
+        $this->params[$name] = $default;
     }
 
     /**
