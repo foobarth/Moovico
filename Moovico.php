@@ -815,7 +815,7 @@ class Moovico
      */
     protected static function getControllerClassName($controller)
     {
-        return ucfirst($controller).'Controller';
+        return ucfirst(strtolower($controller)).'Controller';
     }
 
     /**
@@ -827,7 +827,7 @@ class Moovico
      */
     protected static function getControllerMethod($action)
     {
-        return ucfirst($action);
+        return ucfirst(strtolower($action));
     }
 
     /**
