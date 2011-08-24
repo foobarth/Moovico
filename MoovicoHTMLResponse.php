@@ -27,7 +27,7 @@ class MoovicoHTMLResponse extends MoovicoResponseInterface
         if (empty($template))
         {
             $route = Moovico::GetRoute();
-            $template = $route->GetController().DIRECTORY_SEPARATOR.$route->GetAction();
+            $template = strtolower($route->GetController().DIRECTORY_SEPARATOR.$route->GetAction());
         }
 
         $this->view = new MoovicoView($template);
