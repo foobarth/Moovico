@@ -25,6 +25,22 @@ class MoovicoView
     protected $payload;
 
     /**
+     * css 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $css;
+
+    /**
+     * js 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $js;
+
+    /**
      * __construct 
      * 
      * @param mixed $template_file 
@@ -66,6 +82,66 @@ class MoovicoView
     {
         $this->payload = $payload;
         $this->doShow();
+    }
+
+    /**
+     * AddCSS 
+     * 
+     * @param mixed $type 
+     * @param mixed $file 
+     * @access public
+     * @return void
+     */
+    public function AddCSS($type, $file) {
+        settype($this->css[$type], 'array');
+        $this->css[$type][] = $file;
+    }
+
+    /**
+     * renderCSS 
+     * 
+     * @param mixed $type 
+     * @access protected
+     * @return void
+     */
+    protected function renderCSS($type) {
+        if (empty($this->css[$type])) {
+            return;
+        }
+
+        foreach ($this->css[$type] as $file) {
+            printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", $file);
+        }
+    }
+
+    /**
+     * AddJS 
+     * 
+     * @param mixed $type 
+     * @param mixed $file 
+     * @access public
+     * @return void
+     */
+    public function AddJS($type, $file) {
+        settype($this->js[$type], 'array');
+        $this->js[$type][] = $file;
+    }
+
+    /**
+     * renderJS 
+     * 
+     * @param mixed $type 
+     * @access protected
+     * @return void
+     */
+    protected function renderJS($type) {
+        if (empty($this->js[$type])) {
+            return;
+        }
+
+        foreach ($this->js[$type] as $file) {
+            printf("<script type=\"text/javascript\" src=\"%s\"></script>\n", $file);
+        }
     }
 
     /**
