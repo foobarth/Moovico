@@ -69,7 +69,7 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
         $stmt = $this->db->prepare($sql);
         if (empty($stmt))
         {
-            throw new MoovicoException('Statement preparation failed: '.$this->db->error, Moovico::E_DB_INVALID_SQL);
+            throw new MoovicoException('Statement preparation failed: '.$this->db->error." SQL: $sql", Moovico::E_DB_INVALID_SQL);
         }
 
         if (empty($this->type))
@@ -356,7 +356,7 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
      */
     protected function getDataType($v) 
     {
-        if (!is_numeric($v)) {
+        if (!is_numeric($v) || is_string($v)) {
             return 's';
         }
 

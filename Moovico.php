@@ -128,6 +128,22 @@ class Moovico
     protected static $plugins;
 
     /**
+     * SetEnv 
+     * 
+     * @param Array $env 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function SetEnv(Array $env) 
+    {
+        foreach ($env as $k => $v) 
+        {
+            $_SERVER[$k] = $v;
+        }
+    }
+
+    /**
      * TODO: short description.
      * 
      * @return TODO
