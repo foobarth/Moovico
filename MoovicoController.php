@@ -172,7 +172,14 @@ abstract class MoovicoController
     {
         if (!isset($this->params[$name]))
         {   
-            throw new MoovicoException('Required parameter '.$name.' missing.', Moovico::E_CORE_MISSING_PARAM);
+            throw new MoovicoException(
+                'Required parameter '.$name.' missing.', 
+                Moovico::E_CORE_MISSING_PARAM,
+                array(
+                    'param' => $name,
+                    'code'  => crc32($name)
+                )
+            );
         }
 
         try 
@@ -183,7 +190,14 @@ abstract class MoovicoController
         {
             if ($e->getCode() == Moovico::E_CORE_MISSING_PARAM)
             {
-                throw new MoovicoException('Required parameter '.$name.' missing.', Moovico::E_CORE_MISSING_PARAM);
+                throw new MoovicoException(
+                    'Required parameter '.$name.' missing.', 
+                    Moovico::E_CORE_MISSING_PARAM,
+                    array(
+                        'param' => $name,
+                        'code'  => crc32($name)
+                    )
+                );
             }
 
             throw $e;
