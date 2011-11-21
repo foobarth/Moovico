@@ -97,15 +97,15 @@ final class MoovicoCronRunner {
 
                 $showOutput = self::$debug === true;
                 switch ($res) {
-                    case Cron_Base::STATUS_FINISHED:
+                    case MoovicoCronjob::STATUS_FINISHED:
                         self::Debug('Job finished normally');
                         break;
 
-                    case Cron_Base::STATUS_OUT_OF_SCHEDULE:
+                    case MoovicoCronjob::STATUS_OUT_OF_SCHEDULE:
                         self::Debug('Job is out of schedule');
                         break;
 
-                    case Cron_Base::STATUS_ERROR:
+                    case MoovicoCronjob::STATUS_ERROR:
                         $showOutput = true;
                         self::Output('Job finished with errors');
                         break;
