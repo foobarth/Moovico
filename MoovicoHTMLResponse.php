@@ -30,6 +30,17 @@ class MoovicoHTMLResponse extends MoovicoResponseInterface
             $template = strtolower($route->GetController().DIRECTORY_SEPARATOR.$route->GetAction());
         }
 
+        $this->SetView($template);
+    }
+
+    /**
+     * SetView 
+     * 
+     * @param mixed $template 
+     * @access public
+     * @return void
+     */
+    public function SetView($template) {
         $this->view = new MoovicoView($template);
     }
 
