@@ -64,7 +64,7 @@ abstract class MoovicoCronjob {
             return false;
         }
 
-        $now = Cron_Runner::GetTime();
+        $now = MoovicoCronRunner::GetTime();
         list($minutes, $hours, $day, $month, $dayofweek) = explode(' ', static::$schedule);
 
         if (is_numeric($minutes) && $minutes != $now['minutes']) {
