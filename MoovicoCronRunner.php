@@ -197,7 +197,7 @@ final class MoovicoCronRunner {
 }
 
 // self invoking if configured as fcgi handler
-if (!empty($_SERVER['argc']) && basename(__FILE__) == $_SERVER['SCRIPT_FILENAME']) {
+if (!empty($_SERVER['argc'])) {
 
     $options = getopt('', array('host:', 'root:', 'debug'));
     if (empty($options['host']) || empty($options['root'])) {
