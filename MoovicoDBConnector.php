@@ -301,7 +301,9 @@ abstract class MoovicoDBConnector
     public final function Execute()
     {
         $sql = $this->buildQuery();
-        return $this->Query($sql, array_merge($this->data, $this->bindings));
+        $res = $this->Query($sql, array_merge($this->data, $this->bindings));
+
+        return $res;
     }
 
     /**
@@ -313,6 +315,7 @@ abstract class MoovicoDBConnector
      */
     public final function Select(Array $columns)
     {
+        $this->Cleanup();
         $this->type = self::SQL_TYPE_SELECT;
         $this->columns = $columns;
 
@@ -329,6 +332,7 @@ abstract class MoovicoDBConnector
      */
     public final function Insert(Array $data)
     {
+        $this->Cleanup();
         $this->type = self::SQL_TYPE_INSERT;
         $this->data = $this->expandParams($data);
 
@@ -345,6 +349,7 @@ abstract class MoovicoDBConnector
      */
     public final function Update(Array $data)
     {
+        $this->Cleanup();
         $this->type = self::SQL_TYPE_UPDATE;
         $this->data = $this->expandParams($data);
 
@@ -360,6 +365,7 @@ abstract class MoovicoDBConnector
      */
     public final function Delete()
     {
+        $this->Cleanup();
         $this->type = self::SQL_TYPE_DELETE;
 
         return $this;

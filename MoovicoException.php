@@ -26,7 +26,7 @@ class MoovicoException extends Exception
     public function __construct($msg, $code = 0, Array $payload = array())
     {
         if (empty($code)) {
-            $code = $this->generateCode();
+            $code = $this->generateCode($msg);
         }
 
         if (!empty($payload)) {
