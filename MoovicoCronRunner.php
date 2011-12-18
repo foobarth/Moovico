@@ -192,7 +192,9 @@ final class MoovicoCronRunner {
      * @return void
      */
     public static function Output($str, $class = __CLASS__) {
-        printf("[%s %20s] %s\n", date('Y-m-d H:i:s'), $class, $str);
+        foreach (explode("\n", $str) as $line) {
+            printf("[%s %20s] %s\n", date('Y-m-d H:i:s'), $class, $line);
+        }
     }
 }
 
@@ -212,6 +214,7 @@ if (!empty($_SERVER['argc'])) {
         'HTTP_HOST'         => $options['host'],
         'REQUEST_URI'       => '/',
         'MOOVICO_APP_ROOT'  => realpath($options['root']).'/',
+        'SERVER_PROTOCOL'   => 'http',
         'HTTPS'             => 'on' // in case it's forced in config
     ));
 

@@ -336,6 +336,17 @@ class Moovico
     }
 
     /**
+     * GetDebugStack 
+     * 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function GetDebugStack() {
+        return self::$debug_stack;
+    }
+
+    /**
      * TODO: short description.
      * 
      * @return TODO
