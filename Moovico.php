@@ -759,6 +759,11 @@ class Moovico
         {
             $response = self::createResponse(self::$response);
         }
+        // http response codes
+        else if (is_numeric(self::$response))
+        {
+            $response = MoovicoHTTPStatusResponse::Apply(self::$response);
+        }
         else
         {
             if (!(self::$response instanceof MoovicoResponseInterface))
