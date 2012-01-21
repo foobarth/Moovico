@@ -26,6 +26,7 @@ class MoovicoHTTPStatusResponse extends MoovicoResponseInterface
     const STATUS_UNAUTHORIZED           = 401;
     const STATUS_FORBIDDEN              = 403;
     const STATUS_NOT_FOUND              = 404;
+    const STATUS_METHOD_NOT_ALLOWED     = 405;
     const STATUS_NOT_ACCEPTABLE         = 406;
     const STATUS_CONFLICT               = 409;
     const STATUS_GONE                   = 410;
@@ -102,7 +103,7 @@ class MoovicoHTTPStatusResponse extends MoovicoResponseInterface
      * @access public
      * @return void
      */
-    public static function Apply($status)
+    public static function Apply($status = null)
     {
         $obj = parent::Apply();
         $obj->status = $status;
