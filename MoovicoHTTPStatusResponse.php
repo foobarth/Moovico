@@ -13,6 +13,26 @@
 class MoovicoHTTPStatusResponse extends MoovicoResponseInterface
 {
     /**
+     * some references to most important status codes 
+     */
+    const STATUS_OK                     = 200;
+    const STATUS_CREATED                = 201;
+    const STATUS_ACCEPTED               = 202;
+    const STATUS_NO_CONTENT             = 204;
+    const STATUS_MOVED                  = 301;
+    const STATUS_FOUND                  = 302;
+    const STATUS_NOT_MODIFIED           = 304;
+    const STATUS_BAD_REQUEST            = 400;
+    const STATUS_UNAUTHORIZED           = 401;
+    const STATUS_FORBIDDEN              = 403;
+    const STATUS_NOT_FOUND              = 404;
+    const STATUS_NOT_ACCEPTABLE         = 406;
+    const STATUS_CONFLICT               = 409;
+    const STATUS_GONE                   = 410;
+    const STATUS_PRECONDITION_FAILED    = 412;
+    const STATUS_EXPECTATION_FAILED     = 417;
+
+    /**
      * code descriptions
      */
     static protected $descriptions = array(
