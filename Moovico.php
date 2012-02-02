@@ -175,7 +175,11 @@ class Moovico
         $file = realpath(self::$app_root.'conf/'.self::$url['host'].'.ini');
         if (!$file)
         {
-            throw new MoovicoException('Config file for host "'.self::$url['host'].'" not found', Moovico::E_CORE_NO_CONFIG);
+            $file = realpath(self::$app_root.'conf/default.ini');
+            if (!$file)
+            {
+                throw new MoovicoException('Config file for host "'.self::$url['host'].'" or default.ini not found', Moovico::E_CORE_NO_CONFIG);
+            }
         }
 
         self::$conf = parse_ini_file($file, true);
