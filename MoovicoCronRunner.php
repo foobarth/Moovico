@@ -31,6 +31,11 @@ final class MoovicoCronRunner {
     protected static $lock_handle;
 
     /**
+     * ignore schedule flag
+     */
+    protected static $ignore_schedule;
+
+    /**
      * Run 
      * 
      * @static
@@ -38,12 +43,17 @@ final class MoovicoCronRunner {
      * @access public
      * @return void
      */
-    public static final function Run($debug = false) {
-        self::$debug = $debug === true;
+    public static final function Run(Array $opt = array()) {
+        self::$debug = !empty($opt['debug']);
+        self::$ignore_schedule = !empty($opt['ignore_schedule']);
+        self::$now = getdate();
+
+        $jobs = !empty($opt['jobs']) ? $opt['jobs'] : array();
+        settype($jobs, 'array');
+
         self::Debug('MoovicoCronRunner started.');
         self::lock();
-        self::$now = getdate();
-        self::runQueue();
+        self::runQueue($jobs);
         self::unlock();
     }
 
@@ -76,13 +86,16 @@ final class MoovicoCronRunner {
     /**
      * runQueue 
      * 
+     * @param mixed $job 
      * @static
      * @access protected
      * @return void
      */
-    protected static function runQueue() {
-        $jobs = self::getJobs();
+    protected static function runQueue($jobs = array()) {
+        $jobs = !empty($jobs) ? $jobs : self::getJobs();
+
         self::Debug(count($jobs).' job(s) to consider.');
+
         @ob_end_clean();
         foreach ($jobs as $jobfile) {
             include_once($jobfile);
@@ -91,7 +104,7 @@ final class MoovicoCronRunner {
                 self::Debug('Running '.$job);
 
                 ob_start();
-                $res = $job::Run();
+                $res = $job::Run(self::$ignore_schedule === true);
                 $out = trim(ob_get_contents());
                 ob_end_clean();
 
@@ -176,9 +189,9 @@ final class MoovicoCronRunner {
      * @access public
      * @return void
      */
-    public static function Debug($str, $class = __CLASS__) {
+    public static function Debug($str, $class = __CLASS__, $flush = false) {
         if (self::$debug === true) {
-            self::Output($str, $class);
+            self::Output($str, $class, $flush);
         }
     }
 
@@ -191,22 +204,28 @@ final class MoovicoCronRunner {
      * @access public
      * @return void
      */
-    public static function Output($str, $class = __CLASS__) {
+    public static function Output($str, $class = __CLASS__, $flush = false) {
         foreach (explode("\n", $str) as $line) {
             printf("[%s %20s] %s\n", date('Y-m-d H:i:s'), $class, $line);
+        }
+
+        if ($flush) {
+            ob_flush();
         }
     }
 }
 
-// self invoking if configured as fcgi handler
+// self invoking if configured as cli handler
 if (!empty($_SERVER['argc'])) {
 
-    $options = getopt('', array('host:', 'root:', 'debug'));
+    $options = getopt('', array('host:', 'root:', 'debug', 'ignore-schedule', 'jobs:'));
     if (empty($options['host']) || empty($options['root'])) {
-        die("Usage: ".basename($_SERVER['argv'][0])." --host=HTTP_HOST --root=APP_ROOT [--debug]\n");
+        die("Usage: ".basename($_SERVER['argv'][0])." --host=HTTP_HOST --root=APP_ROOT [--debug] [--ignore-schedule] [--jobs=JOB_FILENAME_1,JOB_FILENAME_2,...]\n");
     }
 
     $debug = isset($options['debug']);
+    $ignore_schedule = isset($options['ignore-schedule']); // note the dash
+    $jobs = !empty($options['jobs']) ? explode(',', $options['jobs']) : array();
 
     require(dirname(__FILE__).'/Moovico.php');
 
@@ -219,5 +238,9 @@ if (!empty($_SERVER['argc'])) {
     ));
 
     Moovico::Setup();
-    MoovicoCronRunner::Run($debug);
+    MoovicoCronRunner::Run(array(
+        'debug'             => $debug,
+        'jobs'              => $jobs,
+        'ignore_schedule'   => $ignore_schedule
+    ));
 }

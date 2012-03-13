@@ -27,8 +27,8 @@ abstract class MoovicoCronjob {
      * @access public
      * @return void
      */
-    public static final function Run() {
-        if (static::shouldRunNow()) {
+    public static final function Run($ignore_schedule = false) {
+        if ($ignore_schedule === true || static::shouldRunNow()) {
             try {
                 static::doRun();
                 return self::STATUS_FINISHED;
