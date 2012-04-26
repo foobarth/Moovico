@@ -106,14 +106,14 @@ abstract class MoovicoCronjob {
         $testValues = array();
         if (is_numeric($schedulePartValue)) {
             $testValues[] = $schedulePartValue;
-        } else if (strpos(',', $schedulePartValue) !== false) {
+        } else if (strpos($schedulePartValue, ',') !== false) {
             $tmp = explode(',', $schedulePartValue);
             foreach ($tmp as $val) {
                 if (is_numeric($val)) {
                     $testValues[] = $val;
                 }
             }
-        } else if (strpos('-', $schedulePartValue) !== false) {
+        } else if (strpos($schedulePartValue, '-') !== false) {
             list($from, $to) = explode('-', $schedulePartValue);
             for ($val = $from; $val <= $to; $val++) {
                 if (is_numeric($val)) {
