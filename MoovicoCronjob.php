@@ -65,28 +65,71 @@ abstract class MoovicoCronjob {
         }
 
         $now = MoovicoCronRunner::GetTime();
-        list($minutes, $hours, $day, $month, $dayofweek) = explode(' ', static::$schedule);
+        list($minutes, $hours, $mday, $mon, $wday) = explode(' ', static::$schedule);
 
-        if (is_numeric($minutes) && $minutes != $now['minutes']) {
+        if (!self::partIsMatching($minutes, $now['minutes'])) {
             return false;
         }
 
-        if (is_numeric($hours) && $hours != $now['hours']) {
+        if (!self::partIsMatching($hours, $now['hours'])) {
             return false;
         }
 
-        if (is_numeric($day) && $day != $now['mday']) {
+        if (!self::partIsMatching($mday, $now['mday'])) {
             return false;
         }
 
-        if (is_numeric($month) && $month != $now['mon']) {
+        if (!self::partIsMatching($mon, $now['mon'])) {
             return false;
         }
 
-        if (is_numeric($dayofweek) && $dayofweek != $now['wday']) {
+        if (!self::partIsMatching($wday, $now['wday'])) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * partIsMatching 
+     * 
+     * @param mixed $schedulePartValue 
+     * @param mixed $nowPartValue 
+     * @access protected
+     * @return void
+     */
+    protected static function partIsMatching($schedulePartValue, $nowPartValue) {
+        if ($schedulePartValue === '*') {
+            return true;
+        }
+
+        $testValues = array();
+        if (is_numeric($schedulePartValue)) {
+            $testValues[] = $schedulePartValue;
+        } else if (strpos(',', $schedulePartValue) !== false) {
+            $tmp = explode(',', $schedulePartValue);
+            foreach ($tmp as $val) {
+                if (is_numeric($val)) {
+                    $testValues[] = $val;
+                }
+            }
+        } else if (strpos('-', $schedulePartValue) !== false) {
+            list($from, $to) = explode('-', $schedulePartValue);
+            for ($val = $from; $val <= $to; $val++) {
+                if (is_numeric($val)) {
+                    $testValues[] = $val;
+                }
+            }
+        } else {
+            throw new MoovicoException('Unparseable schedule part found');
+        }
+
+        foreach ($testValues as $val) {
+            if ($val == $nowPartValue) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
