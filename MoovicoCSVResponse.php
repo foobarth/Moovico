@@ -53,6 +53,14 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
     protected $seperated;
 
     /**
+     * columns 
+     * 
+     * @var mixed
+     * @access protected
+     */
+    protected $columns;
+
+    /**
      * __construct 
      * 
      * @param mixed $filename 
@@ -68,6 +76,16 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
         $this->seperated = $s;
         $this->enclosed = $e;
         $this->terminated = $t;
+    }
+
+    /**
+     * SetColumns 
+     * 
+     * @access public
+     * @return void
+     */
+    public function SetColumns($columns) {
+        $this->columns = $columns;
     }
 
     /**
@@ -101,7 +119,7 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
         foreach ($this->data as $idx => $row)
         {
             $str.= $row->toCSV($idx === 0, $this->enclosed, 
-                    $this->seperated, $this->terminated); // print headers on first row
+                    $this->seperated, $this->terminated, $this->columns); // print headers on first row
         }
         
         return $str;

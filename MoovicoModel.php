@@ -431,10 +431,10 @@ abstract class MoovicoModel
      * @access public
      * @return void
      */
-    public function toCSV($include_headers = false, $e = '"', $s = ';', $t = "\n")
+    public function toCSV($include_headers = false, $e = '"', $s = ';', $t = "\n", $columns = array())
     {
         $str = '';
-        $cols = $this->GetColumns();
+        $cols = !empty($columns) ? $columns : $this->GetColumns();
         if ($include_headers == true)
         {
             $vals = array();
