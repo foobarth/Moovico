@@ -623,6 +623,10 @@ class Moovico
         if (!empty($_SERVER['MOOVICO_APP_ROOT']))
         {
             self::$app_root = $_SERVER['MOOVICO_APP_ROOT'];
+            if (substr(self::$app_root, -1) != '/') {
+                self::$app_root.= '/';
+            }
+
             return;
         }
 
