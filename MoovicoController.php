@@ -95,7 +95,7 @@ abstract class MoovicoController
      */
     protected final function RequireArg(&$arg, $type = 'string', Array $whitelist = array())
     {
-        if (empty($arg) && $arg !== 0)
+        if (empty($arg) && $arg !== 0 && $arg !== 0.0)
         {   
             throw new MoovicoException('Required argument is empty.', Moovico::E_CORE_MISSING_PARAM);
         }
@@ -222,7 +222,7 @@ abstract class MoovicoController
             $arg = $default;
         }
 
-        if (!empty($arg) || $arg === 0)
+        if (!empty($arg) || $arg === 0 || $arg === 0.0)
         {
             return $this->RequireArg($arg, $type, $whitelist); 
         }
@@ -249,8 +249,9 @@ abstract class MoovicoController
             $this->SetDefaultValue($name, $type, $default);
         }
 
-        if (!empty($this->params[$name]) || (isset($this->params[$name]) && $this->params[$name] === 0))
-        {
+        if (!empty($this->params[$name]) || 
+            (isset($this->params[$name]) && ($this->params[$name] === 0 || $this->params[$name] === 0.0))
+        ) {
             return $this->RequireParam($name, $type, $whitelist); 
         }
 
