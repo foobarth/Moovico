@@ -96,6 +96,7 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
      */
     public function GetHeaders()
     {
+        return;
         return array(
             'Pragma: private',
             'Expires: 0',
@@ -118,8 +119,8 @@ class MoovicoCSVResponse extends MoovicoResponseInterface
         $str = '';
         foreach ($this->data as $idx => $row)
         {
-            $str.= $row->toCSV($idx === 0, $this->enclosed, 
-                    $this->seperated, $this->terminated, $this->columns); // print headers on first row
+            $str.= MoovicoCSVGenerator::rowFromObject($row, $idx === 0, $this->enclosed, 
+                    $this->seperated, $this->terminated, $this->columns);
         }
         
         return $str;
