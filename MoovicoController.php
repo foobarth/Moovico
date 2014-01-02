@@ -30,6 +30,13 @@ abstract class MoovicoController
     protected $params = array();
 
     /**
+     * args
+     *
+     * @var array
+     */
+    protected $args = array();
+
+    /**
      * __construct 
      * 
      * @access public
@@ -57,6 +64,15 @@ abstract class MoovicoController
      */
     public function SetParams(Array $params) {
         $this->params = $params;
+    }
+
+    /**
+     * SetArgs
+     *
+     * @param Array $args
+     */
+    public function SetArgs(Array $args) {
+        $this->args = $args;
     }
 
     /**
@@ -111,7 +127,11 @@ abstract class MoovicoController
                 } 
                 else if (!is_array($arg))
                 {
-                    $arg = explode(self::PARAM_SPLIT_TOKEN, $arg);
+                    if (strpos($arg, self::PARAM_SPLIT_TOKEN) !== false) {
+                        $arg = explode(self::PARAM_SPLIT_TOKEN, $arg);
+                    } else {
+                        $arg = array($arg);
+                    }
                 }
 
                 foreach ($arg as &$v)
@@ -127,7 +147,12 @@ abstract class MoovicoController
 
         if (func_num_args() == 3 && count($whitelist) && !in_array($arg, $whitelist, true))
         {   
-            throw new MoovicoException('Invalid value or type in argument', Moovico::E_CORE_INVALID_PARAM);
+            $test = is_array($arg) ? $arg : array($arg);
+            foreach ($test as $testArg) {
+                if (!in_array($testArg, $whitelist, true)) {
+                    throw new MoovicoException('Invalid value or type in argument', Moovico::E_CORE_INVALID_PARAM);
+                }
+            }
         }   
 
         return $this;
@@ -410,6 +435,8 @@ abstract class MoovicoController
         {
             throw new MoovicoException('Not authorized', Moovico::E_SESSION_NOT_AUTHORIZED);
         }
+
+        return $this->GetSessionToken();
     }
 
     /**
