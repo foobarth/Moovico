@@ -165,11 +165,23 @@ abstract class MoovicoDBConnector
     {
         if (empty(self::$instance))
         {
-            $class = get_called_class();
-            self::$instance = new $class($conf);
+            self::$instance = static::NewInstance($conf);
         }
 
         return self::$instance;
+    }
+
+    /**
+     * NewInstance
+     *
+     * @param Array $conf
+     */
+    public final static function NewInstance(Array $conf = null)
+    {
+        $class = get_called_class();
+        $instance = new $class($conf);
+
+        return $instance;
     }
 
     /**

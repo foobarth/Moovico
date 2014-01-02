@@ -9,9 +9,18 @@
 abstract class MoovicoModel
 {
     /**
-     *  
+     * columns
+     *
+     * @var array
      */
     private static $columns = array();
+
+    /**
+     * db_id
+     *
+     * @var string
+     */
+    private $db_id = 'default';
 
     /**
      * order_by 
@@ -111,6 +120,8 @@ abstract class MoovicoModel
                 $this->{$prop} = $data->{$prop};
             }
         }
+
+        return $this;
     }
 
     /**
@@ -242,7 +253,7 @@ abstract class MoovicoModel
             }
         }
 
-        $db = Moovico::GetDB();
+        $db = $this->getDB();
         $result = $db->Insert($what)
                      ->Into($table)
                      ->OnDuplicateKeyUpdate($onDuplicateKeyUpdate)
@@ -282,7 +293,7 @@ abstract class MoovicoModel
         $columns = $this->doGetColumns();
         $table = static::TABLE;
 
-        $db = Moovico::GetDB();
+        $db = $this->getDB();
         $result = $db->Select($columns)
                      ->From($table)
                      ->Glue($this->glue)
@@ -314,7 +325,7 @@ abstract class MoovicoModel
      */
     public function TotalRows()
     {
-        $db = Moovico::GetDB();
+        $db = $this->getDB();
         return $db->TotalRows();
     }
 
@@ -342,7 +353,7 @@ abstract class MoovicoModel
             }
         }
 
-        $db = Moovico::GetDB();
+        $db = $this->getDB();
         $result = $db->Update($what)
                      ->Table($table)
                      ->Glue($this->glue)
@@ -369,7 +380,7 @@ abstract class MoovicoModel
             $where[static::PK] = $this->{static::PK};
         }
 
-        $db = Moovico::GetDB();
+        $db = $this->getDB();
         $result = $db->Delete()
                      ->Table($table)
                      ->Glue($this->glue)
@@ -378,6 +389,17 @@ abstract class MoovicoModel
                      ;
 
         return $result;
+    }
+
+    /**
+     * UseDB
+     *
+     * @param mixed $db_id
+     */
+    public function UseDB($db_id) {
+        $this->db_id = $db_id;
+
+        return $this;
     }
 
     /**
@@ -395,6 +417,16 @@ abstract class MoovicoModel
         }
 
         return $cols;
+    }
+
+    /**
+     * getDB
+     *
+     */
+    protected final function getDB() {
+        $db = Moovico::GetDB($this->db_id);
+
+        return $db;
     }
 
     /**
@@ -433,26 +465,8 @@ abstract class MoovicoModel
      */
     public function toCSV($include_headers = false, $e = '"', $s = ';', $t = "\n", $columns = array())
     {
-        $str = '';
         $cols = !empty($columns) ? $columns : $this->GetColumns();
-        if ($include_headers == true)
-        {
-            $vals = array();
-            foreach ($cols as $prop)
-            {
-                $vals[] = strtoupper(addcslashes($prop, $e));
-            }
-
-            $str.= $e.implode($e.$s.$e, $vals).$e.$t;
-        }
-
-        $vals = array();
-        foreach ($cols as $prop)
-        {
-            $vals[] = addcslashes($this->{$prop}, $e);
-        }
-
-        $str.= $e.implode($e.$s.$e, $vals).$e.$t;
+        $str = MoovicoCSVGenerator::rowFromObject($this, $include_headers, $e, $s, $t, $cols);
 
         return $str;
     }

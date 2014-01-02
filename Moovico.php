@@ -32,6 +32,7 @@ class Moovico
     const E_DB_UNDEFINED_COLUMN     = 305;
     const E_DB_DATA_NOT_AVAILABLE   = 306;
     const E_DB_INSUFFICIENT_DATA    = 307;
+    const E_DB_NO_CONFIG            = 308;
 
     const E_VIEW_NO_TEMPLATE        = 401;
 
@@ -118,7 +119,7 @@ class Moovico
     /**
      *  
      */
-    protected static $db;
+    protected static $db = array();
 
     /**
      * TODO: description.
@@ -563,18 +564,34 @@ class Moovico
      * @access public
      * @return void
      */
-    public static function GetDB()
+    public static function GetDB($id = 'default')
     {
-        if (!empty(self::$db))
+        if (!empty(self::$db[$id]))
         {
-            return self::$db;
+            return self::$db[$id];
         }
 
-        $type = self::$conf['database']['connector'];
-        $connector = "Moovico{$type}Connector";
-        self::$db = $connector::GetInstance(self::$conf['database']);
+        if ($id === 'default') {
+            $type = self::$conf['database']['connector'];
+            $connector = "Moovico{$type}Connector";
+            self::$db[$id] = $connector::GetInstance(self::$conf['database']);
 
-        return self::$db;
+            return self::$db[$id];
+        }
+
+        throw new MoovicoException('Only default database connection can be opened on demand', Moovico::E_DB_NO_CONFIG);
+    }
+
+    /**
+     * SetDB
+     *
+     * @param mixed $id
+     * @param mixed $db
+     */
+    public static function SetDB($id, $db) {
+        if ($id !== 'default' && empty(self::$db[$id])) {
+            self::$db[$id] = $db;
+        }
     }
 
     /**
@@ -746,6 +763,10 @@ class Moovico
         }
 
         $args = $msg->GetArgs();
+        if (!empty($args)) {
+            $controller->SetArgs($args);
+        }
+
         self::Debug('Calling '.$className.'::'.$action.'('.implode(', ', $args).')');
         self::Fire('onAction', $controller);
         $response = call_user_func_array(array($controller, $action), $args);
