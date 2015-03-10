@@ -12,6 +12,9 @@
  */
 abstract class MoovicoResponseInterface
 {
+    protected $headers = array();
+    protected $expiresInSeconds = 0;
+
     /**
      * __construct 
      * 
@@ -59,11 +62,30 @@ abstract class MoovicoResponseInterface
     /**
      * GetHeaders 
      * 
-     * @abstract
      * @access public
      * @return void
      */
-    abstract public function GetHeaders();
+    public function GetHeaders()
+    {
+        return $this->headers;
+    }
+
+    public function AddHeader($header) {
+        $this->headers[] = $header;
+    }
+
+    public function Expires($expiresInSeconds) {
+        $this->expiresInSeconds = $expiresInSeconds;
+
+        $now = time();
+        $this->AddHeader('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', $now + $expiresInSeconds));
+        $this->AddHeader('Last-Modified: '.gmdate('D, d M Y H:i:s \G\M\T', $now));
+        $this->AddHeader('Cache-Control: public, max-age='.$expiresInSeconds);
+    }
+
+    public function GetExpireTime() {
+        return (int)$this->expiresInSeconds;
+    }
 
     /**
      * __toString 

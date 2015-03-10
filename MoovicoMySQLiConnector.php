@@ -39,7 +39,7 @@ class MoovicoMySQLiConnector extends MoovicoDBConnector
             return;
         }
 
-        $db = new mysqli($conf['host'], $conf['user'], $conf['password'], $conf['name']);
+        $db = @new mysqli($conf['host'], $conf['user'], $conf['password'], $conf['name']);
         if ($db->connect_error)
         {
             throw new MoovicoException('Database connection failed: '.$db->connect_error, Moovico::E_DB_CONNECT_FAILED);

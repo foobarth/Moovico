@@ -6,6 +6,9 @@
  * TODO: long description.
  * 
  */
-class MoovicoResponse
+class MoovicoResponse extends MoovicoResponseInterface
 {
+    public function __toString() {
+        return (string)$this;
+    }
 }

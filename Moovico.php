@@ -129,6 +129,13 @@ class Moovico
     protected static $plugins;
 
     /**
+     * TODO: description.
+     * 
+     * @var mixed
+     */
+    protected static $cache;
+
+    /**
      * SetEnv 
      * 
      * @param Array $env 
@@ -162,6 +169,7 @@ class Moovico
         self::RegisterExceptionHandler('MoovicoException', new MoovicoExceptionHandler());
         self::LoadConf();
         self::AssertPrerequisites();
+        self::RegisterCache();
     }
 
     /**
@@ -218,6 +226,13 @@ class Moovico
         // require ssl ?
         if (isset(self::$conf['global']['require_ssl']) && self::$conf['global']['require_ssl'] == true) {
             self::RequireSSL();
+        }
+    }
+
+    public static function RegisterCache() {
+        if (!empty(self::$conf['global']['memcache_host'])) {
+            static::$cache = new Memcached();
+            static::$cache->addServer(self::$conf['global']['memcache_host'], 11211);
         }
     }
 
@@ -433,9 +448,9 @@ class Moovico
 
         $path = self::GetClassPath($class);
         $path = self::SanitizeFile($path);
-		if (!file_exists($path) || !is_readable($path)) {
+        if (!file_exists($path) || !is_readable($path)) {
             return false;
-		}
+        }
 
         require($path);
     }
@@ -734,6 +749,14 @@ class Moovico
     protected static function doRunController(MoovicoRequestMessage $msg)
     {
         self::Debug($msg);
+        $sig = $msg->GetSignature();
+        $response = self::getFromCache($sig);
+        if (!empty($response)) {
+            self::Debug("Cache hit! Returning cached response.");
+            $response->AddHeader('X-Moovico-Cache: Hit');
+            return $response;
+        }
+
         $className = self::getControllerClassName($msg->GetController());
         if (!class_exists($className))
         {
@@ -771,7 +794,33 @@ class Moovico
         self::Fire('onAction', $controller);
         $response = call_user_func_array(array($controller, $action), $args);
 
+        // cache response if expire time is set
+        if (!empty($response)) {
+            $ttl = $response->GetExpireTime();
+            if ($ttl > 0) {
+                self::cacheResponse($response, $sig, $ttl);
+            }
+        }
+
         return $response;
+    }
+
+    protected static function cacheResponse($rsp, $key, $ttl) {
+        if (empty(static::$cache)) {
+            return;
+        }
+
+        static::$cache->set($key, $rsp, time() + $ttl);
+    }
+
+    protected static function getFromCache($key) {
+        if (empty(static::$cache)) {
+            return null;
+        }
+
+        $rsp = static::$cache->get($key);
+
+        return $rsp;
     }
 
     /**
@@ -808,6 +857,13 @@ class Moovico
             $response->debug = self::$debug_stack;
         } 
 
+        // Read headers from the underlying MoovicoResponse
+        foreach (self::$response->GetHeaders() as $header)
+        {
+            header($header);
+        }
+
+        // then from the format response
         foreach ($response->GetHeaders() as $header)
         {
             header($header);

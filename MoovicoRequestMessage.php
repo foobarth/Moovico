@@ -270,4 +270,15 @@ class MoovicoRequestMessage
     public function GetParams() {
         return $this->params;
     }
+
+    public function GetSignature() {
+        $str = '';
+        $str.= $this->method;
+        $str.= $this->controller;
+        $str.= $this->action;
+        $str.= http_build_query($this->args, '', '');
+        $str.= http_build_query($this->params, '', '');
+
+        return md5($str);
+    }
 }
